@@ -1,16 +1,50 @@
 import Container from "../layout/Container";
 
+const testimonials = [
+  {
+    name: "Maria A.",
+    text: "A consulta me trouxe muita clareza. Recomendo de coração.",
+  },
+  {
+    name: "Carlos M.",
+    text: "Fui muito bem atendido. Tudo ocorreu com respeito e profissionalismo.",
+  },
+  {
+    name: "Fernanda S.",
+    text: "Uma experiência acolhedora e que realmente me ajudou.",
+  },
+];
+
 export default function Testimonials() {
   return (
     <section id="depoimentos" className="py-28">
       <Container>
-        <h2 className="text-4xl font-bold text-white">
-          Depoimentos
-        </h2>
+        <div className="text-center">
+          <span className="rounded-full border border-violet-500/30 bg-violet-500/10 px-4 py-2 text-sm text-violet-300">
+            Depoimentos
+          </span>
 
-        <p className="mt-6 max-w-2xl text-zinc-400">
-          Veja o que os clientes dizem sobre seus atendimentos.
-        </p>
+          <h2 className="mt-6 text-5xl font-bold text-white">
+            O que dizem nossos clientes
+          </h2>
+        </div>
+
+        <div className="mt-16 grid gap-8 lg:grid-cols-3">
+          {testimonials.map((item) => (
+            <div
+              key={item.name}
+              className="rounded-3xl border border-white/10 bg-white/5 p-8"
+            >
+              <p className="text-zinc-300 leading-7">
+                "{item.text}"
+              </p>
+
+              <h4 className="mt-8 font-semibold text-yellow-400">
+                {item.name}
+              </h4>
+            </div>
+          ))}
+        </div>
       </Container>
     </section>
   );
