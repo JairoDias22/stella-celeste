@@ -1,5 +1,5 @@
 import Container from "../layout/Container";
-import { Mail, Instagram, Phone } from "lucide-react";
+import { Mail, Phone, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export default function Contact() {
@@ -30,7 +30,7 @@ export default function Contact() {
             <div className="space-y-6">
 
               <div className="flex items-center gap-4">
-                <Instagram className="text-violet-400" />
+                <Globe className="text-violet-400" />
                 <span>@stellaceleste</span>
               </div>
 
