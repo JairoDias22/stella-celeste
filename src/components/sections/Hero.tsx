@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import Container from "../layout/Container";
+import HeroCard from "./HeroCard";
 
 export default function Hero() {
   return (
@@ -39,13 +40,9 @@ export default function Hero() {
           </div>
 
           {/* Placeholder da imagem */}
-          <div className="hidden lg:flex justify-center">
-            <div className="flex h-[520px] w-[420px] items-center justify-center rounded-3xl border border-white/10 bg-white/5 backdrop-blur-md">
-              <span className="text-zinc-500">
-                Ilustração da Stella Celeste
-              </span>
-            </div>
-          </div>
+         <div className="hidden lg:block">
+  <HeroCard />
+</div>
         </div>
       </Container>
     </section>
