@@ -1,21 +1,31 @@
 import Link from "next/link";
+import {
+  LayoutDashboard,
+  Briefcase,
+  Calendar,
+  Users,
+} from "lucide-react";
 
 const links = [
   {
     name: "Dashboard",
     href: "/admin/dashboard",
+    icon: LayoutDashboard,
   },
   {
     name: "Serviços",
     href: "/admin/servicos",
+    icon: Briefcase,
   },
   {
     name: "Vagas",
     href: "/admin/vagas",
+    icon: Calendar,
   },
   {
     name: "Clientes",
     href: "/admin/clientes",
+    icon: Users,
   },
 ];
 
@@ -27,15 +37,20 @@ export default function Sidebar() {
       </h1>
 
       <nav className="space-y-3">
-        {links.map((link) => (
-          <Link
-            key={link.href}
-            href={link.href}
-            className="block rounded-xl px-4 py-3 text-zinc-300 transition hover:bg-violet-600 hover:text-white"
-          >
-            {link.name}
-          </Link>
-        ))}
+        {links.map((link) => {
+  const Icon = link.icon;
+
+  return (
+    <Link
+      key={link.href}
+      href={link.href}
+      className="flex items-center gap-3 rounded-xl px-4 py-3 text-zinc-300 transition hover:bg-violet-600 hover:text-white"
+    >
+      <Icon className="h-5 w-5" />
+      {link.name}
+    </Link>
+  );
+})}
       </nav>
     </aside>
   );
