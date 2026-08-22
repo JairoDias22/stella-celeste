@@ -36,7 +36,7 @@ export default function Testimonials() {
               className="rounded-3xl border border-white/10 bg-white/5 p-8"
             >
               <p className="text-zinc-300 leading-7">
-                "{item.text}"
+                &ldquo;{item.text}&rdquo;
               </p>
 
               <h4 className="mt-8 font-semibold text-yellow-400">

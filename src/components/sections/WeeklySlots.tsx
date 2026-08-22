@@ -1,24 +1,18 @@
 import Container from "../layout/Container";
+import { prisma } from "@/lib/prisma";
 
-const slots = [
-  {
-    service: "Consulta Espiritual",
-    total: 10,
-    available: 4,
-  },
-  {
-    service: "Leitura de Cartas",
-    total: 15,
-    available: 9,
-  },
-  {
-    service: "Amarração",
-    total: 5,
-    available: 2,
-  },
-];
+const ORDEM_DIAS = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado", "Domingo"];
 
-export default function WeeklySlots() {
+export default async function WeeklySlots() {
+  const vagas = await prisma.vaga.findMany({
+    orderBy: [{ weekday: "asc" }, { time: "asc" }],
+  });
+
+  const porDia = ORDEM_DIAS.map((dia) => ({
+    dia,
+    horarios: vagas.filter((v) => v.weekday === dia),
+  })).filter((d) => d.horarios.length > 0);
+
   return (
     <section id="vagas" className="py-28">
       <Container>
@@ -36,36 +30,46 @@ export default function WeeklySlots() {
           </p>
         </div>
 
-        <div className="mt-16 space-y-8">
-          {slots.map((slot) => {
-            const percentage =
-              (slot.available / slot.total) * 100;
+        {porDia.length === 0 ? (
+          <p className="mt-16 text-center text-zinc-500">
+            Nenhum horário disponível no momento. Volte em breve.
+          </p>
+        ) : (
+          <div className="mt-16 grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+            {porDia.map(({ dia, horarios }) => {
+              const disponiveis = horarios.filter((h) => h.available).length;
 
-            return (
-              <div
-                key={slot.service}
-                className="rounded-3xl border border-white/10 bg-white/5 p-8"
-              >
-                <div className="mb-4 flex justify-between">
-                  <h3 className="text-xl font-semibold text-white">
-                    {slot.service}
-                  </h3>
+              return (
+                <div
+                  key={dia}
+                  className="rounded-3xl border border-white/10 bg-white/5 p-8"
+                >
+                  <div className="mb-6 flex items-center justify-between">
+                    <h3 className="text-xl font-semibold text-white">{dia}</h3>
+                    <span className="font-semibold text-yellow-400">
+                      {disponiveis} / {horarios.length}
+                    </span>
+                  </div>
 
-                  <span className="text-yellow-400 font-semibold">
-                    {slot.available} / {slot.total}
-                  </span>
+                  <div className="flex flex-wrap gap-2">
+                    {horarios.map((h) => (
+                      <span
+                        key={h.id}
+                        className={`rounded-full px-3 py-1.5 text-sm font-medium ${
+                          h.available
+                            ? "bg-green-500/15 text-green-400"
+                            : "bg-zinc-700/40 text-zinc-500 line-through"
+                        }`}
+                      >
+                        {h.time}
+                      </span>
+                    ))}
+                  </div>
                 </div>
-
-                <div className="h-3 overflow-hidden rounded-full bg-zinc-800">
-                  <div
-                    className="h-full rounded-full bg-gradient-to-r from-violet-600 to-yellow-400"
-                    style={{ width: `${percentage}%` }}
-                  />
-                </div>
-              </div>
-            );
-          })}
-        </div>
+              );
+            })}
+          </div>
+        )}
       </Container>
     </section>
   );

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import Container from "../layout/Container";
 import { Globe, Mail, Phone } from "lucide-react";
 
@@ -58,7 +59,13 @@ export default function Footer() {
         </div>
 
         <div className="mt-12 border-t border-white/10 pt-8 text-center text-sm text-zinc-500">
-          © 2026 Stella Celeste. Todos os direitos reservados.
+          <p>© 2026 Stella Celeste. Todos os direitos reservados.</p>
+          <Link
+            href="/admin/login"
+            className="mt-2 inline-block text-xs text-zinc-700 transition hover:text-zinc-500"
+          >
+            Acesso administrativo
+          </Link>
         </div>
       </Container>
     </footer>

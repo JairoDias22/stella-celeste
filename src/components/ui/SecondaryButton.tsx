@@ -1,8 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-interface SecondaryButtonProps
-  extends React.ComponentProps<typeof Button> {}
+type SecondaryButtonProps = React.ComponentProps<typeof Button>;
 
 export default function SecondaryButton({
   className,

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import Container from "./Container";
 import { Button } from "@/components/ui/button";
+import { UserRound } from "lucide-react";
 
 export default function Navbar() {
   return (
@@ -33,9 +34,16 @@ export default function Navbar() {
             </a>
           </nav>
 
-          <Button className="hidden md:flex">
-            Agendar Consulta
-          </Button>
+          <div className="hidden items-center gap-3 md:flex">
+            <Link
+              href="/login"
+              className="flex items-center gap-2 text-sm text-zinc-300 transition hover:text-white"
+            >
+              <UserRound className="h-4 w-4" />
+              Entrar
+            </Link>
+            <Button>Agendar Consulta</Button>
+          </div>
         </div>
       </Container>
     </header>

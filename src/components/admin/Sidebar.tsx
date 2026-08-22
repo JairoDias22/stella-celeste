@@ -4,6 +4,9 @@ import {
   Briefcase,
   Calendar,
   Users,
+  Wallet,
+  Settings,
+  ClipboardList,
 } from "lucide-react";
 
 const links = [
@@ -23,9 +26,24 @@ const links = [
     icon: Calendar,
   },
   {
+    name: "Reservas",
+    href: "/admin/reservas",
+    icon: ClipboardList,
+  },
+  {
     name: "Clientes",
     href: "/admin/clientes",
     icon: Users,
+  },
+  {
+    name: "Financeiro",
+    href: "/admin/financeiro",
+    icon: Wallet,
+  },
+  {
+    name: "Configurações",
+    href: "/admin/configuracoes",
+    icon: Settings,
   },
 ];
 
