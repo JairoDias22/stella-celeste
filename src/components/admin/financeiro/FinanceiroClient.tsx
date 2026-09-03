@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
-import { DollarSign, TrendingUp, Calendar, CreditCard, Loader2 } from "lucide-react";
+import { useEffect, useRef, useState, useTransition } from "react";
+import { DollarSign, TrendingUp, Calendar, CreditCard, Loader2, Download, FileText, FileSpreadsheet, FileType } from "lucide-react";
 import StatCard from "@/components/admin/StatCard";
-import { getFinanceiroStats } from "@/lib/actions/dashboard";
+import { getFinanceiroStats, getReservasParaExportacao } from "@/lib/actions/dashboard";
+import { exportarPDF, exportarExcel, exportarWord } from "@/lib/utils/exportar-financeiro";
 
 type Periodo = "dia" | "semana" | "mes";
 
@@ -22,6 +23,9 @@ export default function FinanceiroClient() {
   const [periodo, setPeriodo] = useState<Periodo>("mes");
   const [stats, setStats] = useState<Stats | null>(null);
   const [isPending, startTransition] = useTransition();
+  const [exportando, setExportando] = useState<string | null>(null);
+  const [menuExportAberto, setMenuExportAberto] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     startTransition(async () => {
@@ -30,8 +34,33 @@ export default function FinanceiroClient() {
     });
   }, [periodo]);
 
+  useEffect(() => {
+    function handleClickFora(e: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setMenuExportAberto(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickFora);
+    return () => document.removeEventListener("mousedown", handleClickFora);
+  }, []);
+
   const maxBarra = stats ? Math.max(1, ...stats.barras.map((b) => b.valor)) : 1;
   const totalMetodos = stats ? stats.porMetodo.pix + stats.porMetodo.cartao : 0;
+
+  async function handleExportar(formato: "pdf" | "excel" | "word") {
+    setMenuExportAberto(false);
+    setExportando(formato);
+    try {
+      const linhas = await getReservasParaExportacao(periodo);
+      if (formato === "pdf") await exportarPDF(linhas, periodo);
+      else if (formato === "excel") await exportarExcel(linhas, periodo);
+      else await exportarWord(linhas, periodo);
+    } catch {
+      alert("Não foi possível gerar o arquivo. Tente novamente.");
+    } finally {
+      setExportando(null);
+    }
+  }
 
   return (
     <div>
@@ -43,20 +72,59 @@ export default function FinanceiroClient() {
           </p>
         </div>
 
-        <div className="flex gap-2 rounded-full border border-white/10 bg-white/5 p-1">
-          {(["dia", "semana", "mes"] as Periodo[]).map((p) => (
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="flex gap-2 rounded-full border border-white/10 bg-white/5 p-1">
+            {(["dia", "semana", "mes"] as Periodo[]).map((p) => (
+              <button
+                key={p}
+                onClick={() => setPeriodo(p)}
+                className={`rounded-full px-4 py-2 text-sm font-medium capitalize transition ${
+                  periodo === p
+                    ? "bg-violet-600 text-white"
+                    : "text-zinc-400 hover:text-white"
+                }`}
+              >
+                {p === "mes" ? "Mês" : p}
+              </button>
+            ))}
+          </div>
+
+          <div className="relative" ref={menuRef}>
             <button
-              key={p}
-              onClick={() => setPeriodo(p)}
-              className={`rounded-full px-4 py-2 text-sm font-medium capitalize transition ${
-                periodo === p
-                  ? "bg-violet-600 text-white"
-                  : "text-zinc-400 hover:text-white"
-              }`}
+              onClick={() => setMenuExportAberto((v) => !v)}
+              disabled={exportando !== null}
+              className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-white transition hover:bg-white/10"
             >
-              {p === "mes" ? "Mês" : p}
+              {exportando ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
+              Exportar
             </button>
-          ))}
+
+            {menuExportAberto && (
+              <div className="absolute right-0 z-10 mt-2 w-48 overflow-hidden rounded-xl border border-white/10 bg-zinc-900 shadow-xl">
+                <button
+                  onClick={() => handleExportar("pdf")}
+                  className="flex w-full items-center gap-2 px-4 py-3 text-left text-sm text-zinc-200 hover:bg-white/5"
+                >
+                  <FileText className="h-4 w-4 text-red-400" />
+                  Exportar como PDF
+                </button>
+                <button
+                  onClick={() => handleExportar("excel")}
+                  className="flex w-full items-center gap-2 px-4 py-3 text-left text-sm text-zinc-200 hover:bg-white/5"
+                >
+                  <FileSpreadsheet className="h-4 w-4 text-green-400" />
+                  Exportar como Excel
+                </button>
+                <button
+                  onClick={() => handleExportar("word")}
+                  className="flex w-full items-center gap-2 px-4 py-3 text-left text-sm text-zinc-200 hover:bg-white/5"
+                >
+                  <FileType className="h-4 w-4 text-blue-400" />
+                  Exportar como Word
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
@@ -89,7 +157,7 @@ export default function FinanceiroClient() {
                   <div key={i} className="flex flex-1 flex-col items-center gap-2">
                     <div className="flex h-full w-full items-end">
                       <div
-                        className="w-full rounded-t-lg bg-gradient-to-t from-violet-600 to-fuchsia-500"
+                        className="w-full rounded-t-lg bg-gradient-to-t from-violet-600 to-fuchsia-500 transition-all duration-700 ease-out"
                         style={{ height: `${(b.valor / maxBarra) * 100}%`, minHeight: b.valor > 0 ? "4px" : "0" }}
                         title={moeda(b.valor)}
                       />
@@ -128,7 +196,10 @@ export default function FinanceiroClient() {
                           <span className="text-zinc-400">{pct}%</span>
                         </div>
                         <div className="h-2 w-full overflow-hidden rounded-full bg-white/10">
-                          <div className={`h-full ${m.cor}`} style={{ width: `${pct}%` }} />
+                          <div
+                            className={`h-full ${m.cor} transition-all duration-700 ease-out`}
+                            style={{ width: `${pct}%` }}
+                          />
                         </div>
                       </div>
                     );

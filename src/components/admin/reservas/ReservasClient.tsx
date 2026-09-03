@@ -7,7 +7,7 @@ import { atualizarStatusReserva } from "@/lib/actions/reservas-admin";
 type Reserva = {
   id: string;
   status: string;
-  valor: number | string; // Decimal do Prisma chega serializado, tratamos os dois casos
+  valor: number | string;
   metodoPagamento: string | null;
   createdAt: Date;
   cliente: { name: string; email: string; phone: string | null };

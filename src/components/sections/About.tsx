@@ -1,5 +1,6 @@
 import Container from "../layout/Container";
 import { Sparkles, ShieldCheck, MoonStar } from "lucide-react";
+import AnimatedSection from "../layout/AnimatedSection";
 
 export default function About() {
   return (
@@ -8,16 +9,17 @@ export default function About() {
         <div className="grid items-center gap-16 lg:grid-cols-2">
 
           {/* Card */}
-          <div className="relative mx-auto">
-            <div className="absolute inset-0 rounded-3xl bg-violet-600/20 blur-3xl" />
+          <AnimatedSection className="relative mx-auto">
+            <div className="absolute inset-0 rounded-3xl bg-violet-600/20 blur-3xl animate-pulse-glow" />
+            <div className="absolute inset-0 rounded-3xl bg-pink-500/10 blur-3xl" />
 
             <div className="relative flex h-[420px] w-[350px] items-center justify-center rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl">
-              <MoonStar className="h-28 w-28 text-yellow-400" />
+              <MoonStar className="h-28 w-28 text-pink-300 animate-float-slow" />
             </div>
-          </div>
+          </AnimatedSection>
 
           {/* Conteúdo */}
-          <div>
+          <AnimatedSection delay={0.15}>
 
             <span className="rounded-full border border-violet-500/30 bg-violet-500/10 px-4 py-2 text-sm text-violet-300">
               Sobre
@@ -36,7 +38,7 @@ export default function About() {
             <div className="mt-10 space-y-5">
 
               <div className="flex items-center gap-4">
-                <Sparkles className="text-yellow-400" />
+                <Sparkles className="text-pink-300" />
                 <span>Consultas personalizadas</span>
               </div>
 
@@ -52,7 +54,7 @@ export default function About() {
 
             </div>
 
-          </div>
+          </AnimatedSection>
 
         </div>
       </Container>

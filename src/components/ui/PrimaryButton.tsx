@@ -11,7 +11,7 @@ export default function PrimaryButton({
   return (
     <Button
       className={cn(
-        "rounded-full bg-yellow-500 px-8 py-6 text-black font-semibold shadow-lg transition-all duration-300 hover:scale-105 hover:bg-yellow-400",
+        "rounded-full bg-pink-400 px-8 py-6 text-black font-semibold shadow-lg transition-all duration-300 hover:scale-105 hover:bg-pink-300",
         className
       )}
       {...props}

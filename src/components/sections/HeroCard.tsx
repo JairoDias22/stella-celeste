@@ -2,15 +2,16 @@ import { Sparkles, MoonStar, Stars } from "lucide-react";
 
 export default function HeroCard() {
   return (
-    <div className="relative">
+    <div className="relative animate-float-slow">
       {/* Glow */}
       <div className="absolute inset-0 rounded-3xl bg-violet-600/20 blur-3xl" />
+      <div className="absolute inset-0 rounded-3xl bg-pink-500/10 blur-3xl" />
 
       <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-8 backdrop-blur-xl">
 
         <div className="mb-8 flex justify-center">
           <div className="flex h-20 w-20 items-center justify-center rounded-full bg-violet-500/20">
-            <Stars className="h-10 w-10 text-yellow-400" />
+            <Stars className="h-10 w-10 text-pink-300" />
           </div>
         </div>
 
@@ -25,7 +26,7 @@ export default function HeroCard() {
         <div className="mt-10 space-y-5">
 
           <div className="flex items-center gap-3">
-            <Sparkles className="text-yellow-400" />
+            <Sparkles className="text-pink-300" />
             <span>Consultas Personalizadas</span>
           </div>
 
@@ -43,7 +44,7 @@ export default function HeroCard() {
 
         <div className="mt-10 rounded-2xl bg-white/5 p-5 text-center">
 
-          <p className="text-yellow-400 text-lg">
+          <p className="text-pink-300 text-lg">
             ★★★★★
           </p>
 

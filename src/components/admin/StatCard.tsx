@@ -24,7 +24,7 @@ export default function StatCard({
           </h3>
         </div>
 
-        <div className="rounded-xl bg-violet-500/20 p-3 text-yellow-400">
+        <div className="rounded-xl bg-violet-500/20 p-3 text-pink-300">
           {icon}
         </div>
       </div>

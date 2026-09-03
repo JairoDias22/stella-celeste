@@ -110,7 +110,6 @@ export default function VagasClient({ initialData }: { initialData: Vaga[] }) {
       try {
         await toggleVagaDisponibilidade(vaga.id, novoStatus);
       } catch {
-        // reverte em caso de erro
         setVagas((prev) =>
           prev.map((v) => (v.id === vaga.id ? { ...v, available: vaga.available } : v))
         );

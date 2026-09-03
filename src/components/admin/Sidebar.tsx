@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import {
   LayoutDashboard,
@@ -56,19 +58,19 @@ export default function Sidebar() {
 
       <nav className="space-y-3">
         {links.map((link) => {
-  const Icon = link.icon;
+          const Icon = link.icon;
 
-  return (
-    <Link
-      key={link.href}
-      href={link.href}
-      className="flex items-center gap-3 rounded-xl px-4 py-3 text-zinc-300 transition hover:bg-violet-600 hover:text-white"
-    >
-      <Icon className="h-5 w-5" />
-      {link.name}
-    </Link>
-  );
-})}
+          return (
+            <Link
+              key={link.href}
+              href={link.href}
+              className="flex items-center gap-3 rounded-xl px-4 py-3 text-zinc-300 transition hover:bg-violet-600 hover:text-white"
+            >
+              <Icon className="h-5 w-5" />
+              {link.name}
+            </Link>
+          );
+        })}
       </nav>
     </aside>
   );

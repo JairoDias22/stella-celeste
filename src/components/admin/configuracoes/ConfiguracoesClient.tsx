@@ -87,7 +87,6 @@ export default function ConfiguracoesClient({
         <p className="mb-6 rounded-lg bg-violet-500/10 p-4 text-sm text-violet-300">{msg}</p>
       )}
 
-      {/* Dados da conta */}
       <form
         onSubmit={salvarConta}
         className="mb-8 rounded-2xl border border-white/10 bg-white/5 p-8"
@@ -127,7 +126,6 @@ export default function ConfiguracoesClient({
         </Button>
       </form>
 
-      {/* Senha */}
       <form
         onSubmit={salvarSenha}
         className="mb-8 rounded-2xl border border-white/10 bg-white/5 p-8"
@@ -176,7 +174,6 @@ export default function ConfiguracoesClient({
         </Button>
       </form>
 
-      {/* Notificações */}
       <div className="rounded-2xl border border-white/10 bg-white/5 p-8">
         <div className="mb-6 flex items-center gap-3">
           <div className="rounded-xl bg-violet-500/20 p-2.5 text-yellow-400">

@@ -70,13 +70,12 @@ export default function ServicosClient({
         if (editing) {
           await updateServico(editing.id, payload);
           setServices((prev) =>
-            prev.map((s) => (s.id === editing.id ? { ...s, ...payload } : s))
+            prev.map((s) => (s.id === editing.id ? { ...s, ...payload, description: payload.description ?? null } : s))
           );
         } else {
           await createServico(payload);
-          // A revalidatePath já atualiza a página; refletimos otimisticamente aqui também
           setServices((prev) => [
-            { id: crypto.randomUUID(), createdAt: new Date(), ...payload } as Servico,
+            { id: crypto.randomUUID(), createdAt: new Date(), ...payload, description: payload.description ?? null } as Servico,
             ...prev,
           ]);
         }

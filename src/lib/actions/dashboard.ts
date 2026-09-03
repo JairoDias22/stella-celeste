@@ -90,3 +90,25 @@ export async function getFinanceiroStats(periodo: "dia" | "semana" | "mes") {
 
   return { total, atendimentos, ticketMedio, porMetodo, barras };
 }
+
+export async function getReservasParaExportacao(periodo: "dia" | "semana" | "mes") {
+  const inicio = getRangeInicio(periodo);
+
+  const reservas = await prisma.reserva.findMany({
+    where: { status: "pago", createdAt: { gte: inicio } },
+    orderBy: { createdAt: "desc" },
+    include: {
+      cliente: { select: { name: true, email: true } },
+      servico: { select: { name: true } },
+    },
+  });
+
+  return reservas.map((r) => ({
+    data: r.createdAt.toISOString(),
+    cliente: r.cliente.name,
+    email: r.cliente.email,
+    servico: r.servico.name,
+    valor: Number(r.valor),
+    metodoPagamento: r.metodoPagamento ?? "—",
+  }));
+}

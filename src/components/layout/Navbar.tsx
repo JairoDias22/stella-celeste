@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Container from "./Container";
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import { UserRound } from "lucide-react";
 
 export default function Navbar() {
@@ -17,19 +17,19 @@ export default function Navbar() {
 
           {/* Menu Desktop */}
           <nav className="hidden items-center gap-8 md:flex">
-            <a href="#inicio" className="text-sm text-zinc-300 hover:text-white transition">
+            <a href="#inicio" className="text-sm text-zinc-300 hover:text-pink-300 transition">
               Início
             </a>
 
-            <a href="#sobre" className="text-sm text-zinc-300 hover:text-white transition">
+            <a href="#sobre" className="text-sm text-zinc-300 hover:text-pink-300 transition">
               Sobre
             </a>
 
-            <a href="#servicos" className="text-sm text-zinc-300 hover:text-white transition">
+            <a href="#servicos" className="text-sm text-zinc-300 hover:text-pink-300 transition">
               Serviços
             </a>
 
-            <a href="#contato" className="text-sm text-zinc-300 hover:text-white transition">
+            <a href="#contato" className="text-sm text-zinc-300 hover:text-pink-300 transition">
               Contato
             </a>
           </nav>
@@ -42,7 +42,9 @@ export default function Navbar() {
               <UserRound className="h-4 w-4" />
               Entrar
             </Link>
-            <Button>Agendar Consulta</Button>
+            <Link href="/agendar" className={buttonVariants({ className: "transition-transform hover:scale-105" })}>
+              Agendar Consulta
+            </Link>
           </div>
         </div>
       </Container>

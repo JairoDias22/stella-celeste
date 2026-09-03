@@ -4,7 +4,9 @@ import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 
 export async function getServicos() {
-  return prisma.servico.findMany({ orderBy: { createdAt: "desc" } });
+  return prisma.servico.findMany({
+    orderBy: { createdAt: "desc" },
+  });
 }
 
 export async function createServico(data: {

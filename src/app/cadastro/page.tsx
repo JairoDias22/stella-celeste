@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import Background from "@/components/layout/Background";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -51,75 +50,72 @@ export default function CadastroPage() {
   }
 
   return (
-    <>
-      <Background />
-      <div className="flex min-h-screen items-center justify-center px-6 py-20">
-        <div className="w-full max-w-sm">
-          <div className="mb-8 flex flex-col items-center text-center">
-            <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-violet-500/20">
-              <Stars className="h-8 w-8 text-yellow-400" />
-            </div>
-            <h1 className="font-title text-3xl font-bold text-white">Criar conta</h1>
-            <p className="mt-2 text-sm text-zinc-400">
-              Cadastre-se para acompanhar seus atendimentos.
-            </p>
+    <div className="flex min-h-screen items-center justify-center px-6 py-20">
+      <div className="w-full max-w-sm">
+        <div className="mb-8 flex flex-col items-center text-center">
+          <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-violet-500/20">
+            <Stars className="h-8 w-8 text-pink-300" />
           </div>
-
-          <form
-            onSubmit={handleSubmit}
-            className="space-y-4 rounded-3xl border border-white/10 bg-white/5 p-8 backdrop-blur-xl"
-          >
-            {error && (
-              <p className="rounded-lg bg-red-500/10 p-3 text-sm text-red-400">{error}</p>
-            )}
-
-            <div>
-              <Label className="text-zinc-300">Nome</Label>
-              <Input
-                value={form.name}
-                onChange={(e) => setForm({ ...form, name: e.target.value })}
-              />
-            </div>
-            <div>
-              <Label className="text-zinc-300">E-mail</Label>
-              <Input
-                type="email"
-                value={form.email}
-                onChange={(e) => setForm({ ...form, email: e.target.value })}
-              />
-            </div>
-            <div>
-              <Label className="text-zinc-300">Telefone</Label>
-              <Input
-                value={form.phone}
-                onChange={(e) => setForm({ ...form, phone: e.target.value })}
-                placeholder="(85) 99999-9999"
-              />
-            </div>
-            <div>
-              <Label className="text-zinc-300">Senha</Label>
-              <Input
-                type="password"
-                value={form.password}
-                onChange={(e) => setForm({ ...form, password: e.target.value })}
-                placeholder="Mínimo 8 caracteres"
-              />
-            </div>
-
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-              Criar conta
-            </Button>
-          </form>
-
-          <p className="mt-6 text-center text-sm text-zinc-500">
-            Já tem conta?{" "}
-            <Link href="/login" className="text-violet-400 hover:text-violet-300">
-              Entrar
-            </Link>
+          <h1 className="font-title text-3xl font-bold text-white">Criar conta</h1>
+          <p className="mt-2 text-sm text-zinc-400">
+            Cadastre-se para acompanhar seus atendimentos.
           </p>
         </div>
+
+        <form
+          onSubmit={handleSubmit}
+          className="space-y-4 rounded-3xl border border-white/10 bg-white/5 p-8 backdrop-blur-xl"
+        >
+          {error && (
+            <p className="rounded-lg bg-red-500/10 p-3 text-sm text-red-400">{error}</p>
+          )}
+
+          <div>
+            <Label className="text-zinc-300">Nome</Label>
+            <Input
+              value={form.name}
+              onChange={(e) => setForm({ ...form, name: e.target.value })}
+            />
+          </div>
+          <div>
+            <Label className="text-zinc-300">E-mail</Label>
+            <Input
+              type="email"
+              value={form.email}
+              onChange={(e) => setForm({ ...form, email: e.target.value })}
+            />
+          </div>
+          <div>
+            <Label className="text-zinc-300">Telefone</Label>
+            <Input
+              value={form.phone}
+              onChange={(e) => setForm({ ...form, phone: e.target.value })}
+              placeholder="(85) 99999-9999"
+            />
+          </div>
+          <div>
+            <Label className="text-zinc-300">Senha</Label>
+            <Input
+              type="password"
+              value={form.password}
+              onChange={(e) => setForm({ ...form, password: e.target.value })}
+              placeholder="Mínimo 8 caracteres"
+            />
+          </div>
+
+          <Button type="submit" className="w-full transition-transform hover:scale-[1.02]" disabled={loading}>
+            {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+            Criar conta
+          </Button>
+        </form>
+
+        <p className="mt-6 text-center text-sm text-zinc-500">
+          Já tem conta?{" "}
+          <Link href="/login" className="text-pink-300 hover:text-pink-200">
+            Entrar
+          </Link>
+        </p>
       </div>
-    </>
+    </div>
   );
 }
