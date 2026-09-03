@@ -7,7 +7,7 @@ import { atualizarStatusReserva } from "@/lib/actions/reservas-admin";
 type Reserva = {
   id: string;
   status: string;
-  valor: number | string;
+  valor: number;
   metodoPagamento: string | null;
   createdAt: Date;
   cliente: { name: string; email: string; phone: string | null };

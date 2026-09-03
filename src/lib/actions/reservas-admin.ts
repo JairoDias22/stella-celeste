@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 
 export async function getReservasAdmin() {
-  return prisma.reserva.findMany({
+  const reservas = await prisma.reserva.findMany({
     orderBy: { createdAt: "desc" },
     include: {
       cliente: { select: { name: true, email: true, phone: true } },
@@ -12,6 +12,8 @@ export async function getReservasAdmin() {
       vaga: { select: { weekday: true, time: true } },
     },
   });
+
+  return reservas.map((r) => ({ ...r, valor: Number(r.valor) }));
 }
 
 export async function atualizarStatusReserva(
