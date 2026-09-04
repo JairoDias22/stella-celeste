@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Stars, Loader2 } from "lucide-react";
 import { clienteLogin } from "@/lib/actions/auth";
+import SiteLogo from "@/components/layout/SiteLogo";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -42,6 +43,9 @@ export default function LoginPage() {
 
   return (
     <div className="flex min-h-screen items-center justify-center px-6">
+      <div className="fixed left-1/2 top-6 -translate-x-1/2">
+        <SiteLogo />
+      </div>
       <div className="w-full max-w-sm">
         <div className="mb-8 flex flex-col items-center text-center">
           <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-violet-500/20">

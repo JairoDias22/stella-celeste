@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Loader2, CheckCircle2 } from "lucide-react";
 import { criarReserva } from "@/lib/actions/agendamento";
 import { formatarMoeda, parsePrecoParaNumero } from "@/lib/utils/money";
+import SiteLogo from "@/components/layout/SiteLogo";
 
 type Servico = {
   id: string;
@@ -63,6 +64,9 @@ export default function AgendarClient({
   return (
     <div className="min-h-screen pt-32 pb-20">
       <Container>
+        <div className="mb-6">
+          <SiteLogo />
+        </div>
         <div className="mb-10 text-center">
           <h1 className="font-title text-4xl font-bold text-white">Agendar Consulta</h1>
           <p className="mt-3 text-zinc-400">
@@ -130,31 +134,47 @@ export default function AgendarClient({
               </div>
             )}
 
-            {servicoEscolhido && vagaEscolhida && (
-              <div className="rounded-2xl border border-pink-400/30 bg-pink-500/10 p-6">
-                <div className="flex items-center gap-3">
-                  <CheckCircle2 className="h-5 w-5 text-pink-300" />
-                  <p className="text-white">
-                    <strong>{servicoEscolhido.name}</strong> — {vagaEscolhida.weekday} às{" "}
-                    {vagaEscolhida.time}
+            <div
+              className={`rounded-2xl border p-6 transition-colors ${
+                servicoEscolhido && vagaEscolhida
+                  ? "border-pink-400/30 bg-pink-500/10"
+                  : "border-white/10 bg-white/5"
+              }`}
+            >
+              {servicoEscolhido && vagaEscolhida ? (
+                <>
+                  <div className="flex items-center gap-3">
+                    <CheckCircle2 className="h-5 w-5 text-pink-300" />
+                    <p className="text-white">
+                      <strong>{servicoEscolhido.name}</strong> — {vagaEscolhida.weekday} às{" "}
+                      {vagaEscolhida.time}
+                    </p>
+                  </div>
+                  <p className="mt-2 text-sm text-zinc-400">
+                    Valor: {formatarMoeda(parsePrecoParaNumero(servicoEscolhido.price))} — pagamento
+                    combinado diretamente com a Stella Celeste (por enquanto, o pagamento online
+                    ainda não está disponível).
                   </p>
-                </div>
-                <p className="mt-2 text-sm text-zinc-400">
-                  Valor: {formatarMoeda(parsePrecoParaNumero(servicoEscolhido.price))} — pagamento
-                  combinado diretamente com a Stella Celeste (por enquanto, o pagamento online
-                  ainda não está disponível).
+
+                  {error && (
+                    <p className="mt-4 rounded-lg bg-red-500/10 p-3 text-sm text-red-400">{error}</p>
+                  )}
+
+                  <Button className="mt-4 transition-transform hover:scale-105" onClick={handleConfirmar} disabled={isPending}>
+                    {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                    Confirmar agendamento
+                  </Button>
+                </>
+              ) : (
+                <p className="text-sm text-zinc-500">
+                  {!servicoEscolhido && !vagaEscolhida
+                    ? "Selecione um serviço e um horário acima para continuar."
+                    : !servicoEscolhido
+                      ? "Falta escolher o serviço acima."
+                      : "Falta escolher o horário acima."}
                 </p>
-
-                {error && (
-                  <p className="mt-4 rounded-lg bg-red-500/10 p-3 text-sm text-red-400">{error}</p>
-                )}
-
-                <Button className="mt-4 transition-transform hover:scale-105" onClick={handleConfirmar} disabled={isPending}>
-                  {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-                  Confirmar agendamento
-                </Button>
-              </div>
-            )}
+              )}
+            </div>
           </>
         )}
       </Container>

@@ -11,6 +11,7 @@ import { UserRound, Calendar, LogOut, Loader2, Plus } from "lucide-react";
 import { updateMeuPerfil } from "@/lib/actions/minha-conta";
 import { clienteLogout } from "@/lib/actions/auth";
 import { cancelarReserva } from "@/lib/actions/agendamento";
+import SiteLogo from "@/components/layout/SiteLogo";
 
 type Reserva = {
   id: string;
@@ -88,6 +89,9 @@ export default function MinhaContaClient({
   return (
     <div className="min-h-screen pt-32 pb-20">
       <Container>
+        <div className="mb-6">
+          <SiteLogo />
+        </div>
         <div className="mb-10 flex items-center justify-between">
           <div>
             <h1 className="font-title text-4xl font-bold text-white">Minha Conta</h1>

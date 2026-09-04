@@ -52,9 +52,9 @@ const links = [
 export default function Sidebar() {
   return (
     <aside className="w-64 border-r border-white/10 bg-zinc-950 p-6">
-      <h1 className="mb-10 text-2xl font-bold text-white">
+      <Link href="/" className="mb-10 block text-2xl font-bold text-white transition hover:text-pink-300">
         Stella Admin
-      </h1>
+      </Link>
 
       <nav className="space-y-3">
         {links.map((link) => {

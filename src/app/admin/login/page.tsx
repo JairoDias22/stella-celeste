@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Sparkles, Loader2 } from "lucide-react";
 import { adminLogin } from "@/lib/actions/auth";
+import SiteLogo from "@/components/layout/SiteLogo";
 
 export default function AdminLoginPage() {
   const router = useRouter();
@@ -46,6 +47,9 @@ export default function AdminLoginPage() {
       <div className="fixed bottom-[-250px] right-[-150px] -z-10 h-[450px] w-[450px] rounded-full bg-yellow-500/10 blur-[140px]" />
 
       <div className="w-full max-w-sm">
+        <div className="mb-6 text-center">
+          <SiteLogo />
+        </div>
         <div className="mb-8 flex flex-col items-center text-center">
           <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-violet-500/20">
             <Sparkles className="h-7 w-7 text-yellow-400" />
