@@ -14,6 +14,7 @@ export default function Background() {
 
       {/* Estrelas */}
       <div className="stars" />
+      <div className="stars-grandes" />
     </>
   );
 }

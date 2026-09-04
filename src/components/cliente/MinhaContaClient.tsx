@@ -1,16 +1,17 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Container from "@/components/layout/Container";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { UserRound, Calendar, LogOut, Loader2, Plus } from "lucide-react";
+import { UserRound, Calendar, LogOut, Loader2, Plus, Camera } from "lucide-react";
 import { updateMeuPerfil } from "@/lib/actions/minha-conta";
 import { clienteLogout } from "@/lib/actions/auth";
 import { cancelarReserva } from "@/lib/actions/agendamento";
+import { comprimirImagem } from "@/lib/utils/imagem";
 import SiteLogo from "@/components/layout/SiteLogo";
 
 type Reserva = {
@@ -31,21 +32,53 @@ export default function MinhaContaClient({
   cliente,
   reservas,
 }: {
-  cliente: { name: string; email: string; phone: string | null };
+  cliente: { name: string; email: string; phone: string | null; bio: string | null; avatarUrl: string | null };
   reservas: Reserva[];
 }) {
   const router = useRouter();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [reservasState, setReservasState] = useState(reservas);
   const [isPending, startTransition] = useTransition();
   const [form, setForm] = useState({
     name: cliente.name,
     email: cliente.email,
     phone: cliente.phone ?? "",
+    bio: cliente.bio ?? "",
   });
+  const [avatarUrl, setAvatarUrl] = useState(cliente.avatarUrl);
   const [saving, setSaving] = useState(false);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  async function handleAvatarChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      setError("Escolha um arquivo de imagem.");
+      return;
+    }
+
+    setUploadingAvatar(true);
+    setError(null);
+    try {
+      const dataUrl = await comprimirImagem(file);
+      setAvatarUrl(dataUrl);
+      const result = await updateMeuPerfil({ ...form, avatarUrl: dataUrl });
+      if (!result.success) {
+        setError(result.error ?? "Não foi possível salvar a foto.");
+      } else {
+        setMsg("Foto de perfil atualizada.");
+        router.refresh();
+      }
+    } catch {
+      setError("Não foi possível processar essa imagem.");
+    } finally {
+      setUploadingAvatar(false);
+    }
+  }
 
   async function handleSave(e: React.FormEvent) {
     e.preventDefault();
@@ -57,6 +90,8 @@ export default function MinhaContaClient({
       name: form.name.trim(),
       email: form.email.trim(),
       phone: form.phone.trim() || undefined,
+      bio: form.bio.trim() || undefined,
+      avatarUrl: avatarUrl ?? undefined,
     });
 
     setSaving(false);
@@ -65,6 +100,7 @@ export default function MinhaContaClient({
       return;
     }
     setMsg("Dados atualizados com sucesso.");
+    router.refresh();
   }
 
   async function handleLogout() {
@@ -109,6 +145,42 @@ export default function MinhaContaClient({
             onSubmit={handleSave}
             className="rounded-3xl border border-white/10 bg-white/5 p-8 backdrop-blur-xl lg:col-span-1"
           >
+            <div className="mb-6 flex flex-col items-center text-center">
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="group relative flex h-24 w-24 items-center justify-center overflow-hidden rounded-full border-2 border-pink-400/30 bg-violet-500/20"
+                >
+                  {avatarUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={avatarUrl} alt={form.name} className="h-full w-full object-cover" />
+                  ) : (
+                    <span className="text-2xl font-semibold text-pink-200">
+                      {form.name.charAt(0).toUpperCase()}
+                    </span>
+                  )}
+
+                  <span className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 transition-opacity group-hover:opacity-100">
+                    {uploadingAvatar ? (
+                      <Loader2 className="h-5 w-5 animate-spin text-white" />
+                    ) : (
+                      <Camera className="h-5 w-5 text-white" />
+                    )}
+                  </span>
+                </button>
+
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleAvatarChange}
+                  className="hidden"
+                />
+              </div>
+              <p className="mt-3 text-xs text-zinc-500">Clique na foto para alterar</p>
+            </div>
+
             <div className="mb-6 flex items-center gap-3">
               <div className="rounded-xl bg-violet-500/20 p-2.5 text-pink-300">
                 <UserRound className="h-5 w-5" />
@@ -146,6 +218,16 @@ export default function MinhaContaClient({
                 <Input
                   value={form.phone}
                   onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                />
+              </div>
+              <div>
+                <Label className="text-zinc-300">Sobre você</Label>
+                <textarea
+                  value={form.bio}
+                  onChange={(e) => setForm({ ...form, bio: e.target.value })}
+                  placeholder="Uma breve descrição sobre você (opcional)"
+                  rows={3}
+                  className="w-full resize-none rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white outline-none transition-colors focus:border-pink-400/40"
                 />
               </div>
             </div>

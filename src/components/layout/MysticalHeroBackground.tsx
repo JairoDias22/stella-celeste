@@ -20,6 +20,7 @@ export default function MysticalHeroBackground() {
 
       {/* Estrelas */}
       <div className="stars opacity-90" />
+      <div className="stars-grandes opacity-90" />
 
       {/* Véu escuro por cima pra suavizar contraste com o texto */}
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#0b0710]" />

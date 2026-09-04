@@ -7,11 +7,21 @@ import Testimonials from "@/components/sections/Testimonials";
 import FAQ from "@/components/sections/FAQ";
 import Contact from "@/components/sections/Contact";
 import Footer from "@/components/sections/Footer";
+import { prisma } from "@/lib/prisma";
+import { getClienteAtual } from "@/lib/actions/minha-conta";
 
-export default function Home() {
+export default async function Home() {
+  const [servicos, cliente] = await Promise.all([
+    prisma.servico.findMany({
+      orderBy: { createdAt: "asc" },
+      select: { id: true, name: true, price: true },
+    }),
+    getClienteAtual(),
+  ]);
+
   return (
     <>
-      <Navbar />
+      <Navbar servicos={servicos} cliente={cliente} />
       <Hero />
       <About />
       <Services />

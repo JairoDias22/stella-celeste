@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Container from "@/components/layout/Container";
 import { Button } from "@/components/ui/button";
 import { Loader2, CheckCircle2, Search } from "lucide-react";
@@ -33,7 +33,11 @@ export default function AgendarClient({
   vagas: Vaga[];
 }) {
   const router = useRouter();
-  const [servicoId, setServicoId] = useState<string | null>(null);
+  const searchParams = useSearchParams();
+  const [servicoId, setServicoId] = useState<string | null>(() => {
+    const servicoDaUrl = searchParams.get("servico");
+    return servicoDaUrl && servicos.some((s) => s.id === servicoDaUrl) ? servicoDaUrl : null;
+  });
   const [vagaId, setVagaId] = useState<string | null>(null);
   const [busca, setBusca] = useState("");
   const [isPending, startTransition] = useTransition();

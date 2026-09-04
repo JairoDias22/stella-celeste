@@ -32,6 +32,8 @@ model Cliente {
   email        String    @unique
   phone        String?
   passwordHash String
+  avatarUrl    String?   @db.Text
+  bio          String?
   createdAt    DateTime  @default(now())
   reservas     Reserva[]
 }

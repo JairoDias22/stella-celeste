@@ -17,9 +17,14 @@ import {
   updateCliente,
   deleteCliente,
 } from "@/lib/actions/clientes";
-import type { Cliente, Reserva } from "@/generated/prisma/client";
+import type { Reserva } from "@/generated/prisma/client";
 
-type ClienteComReservas = Cliente & {
+type ClienteComReservas = {
+  id: string;
+  name: string;
+  email: string;
+  phone: string | null;
+  createdAt: Date;
   reservas: Pick<Reserva, "id" | "status">[];
 };
 

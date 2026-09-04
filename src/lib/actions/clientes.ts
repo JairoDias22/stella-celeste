@@ -8,7 +8,12 @@ import { randomBytes } from "crypto";
 export async function getClientes() {
   return prisma.cliente.findMany({
     orderBy: { createdAt: "desc" },
-    include: {
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      phone: true,
+      createdAt: true,
       reservas: {
         select: { id: true, status: true },
       },

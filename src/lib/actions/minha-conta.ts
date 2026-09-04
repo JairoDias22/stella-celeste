@@ -8,6 +8,8 @@ export async function updateMeuPerfil(data: {
   name: string;
   email: string;
   phone?: string;
+  bio?: string;
+  avatarUrl?: string;
 }) {
   const session = await getClienteSession();
   if (!session) return { success: false, error: "Sessão expirada. Faça login novamente." };
@@ -18,5 +20,18 @@ export async function updateMeuPerfil(data: {
   });
 
   revalidatePath("/minha-conta");
+  revalidatePath("/");
   return { success: true };
+}
+
+export async function getClienteAtual() {
+  const session = await getClienteSession();
+  if (!session) return null;
+
+  const cliente = await prisma.cliente.findUnique({
+    where: { id: session.id },
+    select: { name: true, avatarUrl: true },
+  });
+
+  return cliente;
 }

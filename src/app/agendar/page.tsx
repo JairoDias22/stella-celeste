@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { Suspense } from "react";
 import { getClienteSession } from "@/lib/auth";
 import { getServicosParaAgendamento, getVagasDisponiveis } from "@/lib/actions/agendamento";
 import AgendarClient from "@/components/cliente/AgendarClient";
@@ -12,5 +13,9 @@ export default async function AgendarPage() {
     getVagasDisponiveis(),
   ]);
 
-  return <AgendarClient servicos={servicos} vagas={vagas} />;
+  return (
+    <Suspense>
+      <AgendarClient servicos={servicos} vagas={vagas} />
+    </Suspense>
+  );
 }
