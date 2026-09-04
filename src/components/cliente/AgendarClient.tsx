@@ -4,7 +4,7 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import Container from "@/components/layout/Container";
 import { Button } from "@/components/ui/button";
-import { Loader2, CheckCircle2 } from "lucide-react";
+import { Loader2, CheckCircle2, Search } from "lucide-react";
 import { criarReserva } from "@/lib/actions/agendamento";
 import { formatarMoeda, parsePrecoParaNumero } from "@/lib/utils/money";
 import SiteLogo from "@/components/layout/SiteLogo";
@@ -35,11 +35,20 @@ export default function AgendarClient({
   const router = useRouter();
   const [servicoId, setServicoId] = useState<string | null>(null);
   const [vagaId, setVagaId] = useState<string | null>(null);
+  const [busca, setBusca] = useState("");
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
 
   const servicoEscolhido = servicos.find((s) => s.id === servicoId) ?? null;
   const vagaEscolhida = vagas.find((v) => v.id === vagaId) ?? null;
+
+  const servicosFiltrados = servicos.filter((s) => {
+    const termo = busca.toLowerCase();
+    return (
+      s.name.toLowerCase().includes(termo) ||
+      (s.description ?? "").toLowerCase().includes(termo)
+    );
+  });
 
   const vagasPorDia = ORDEM_DIAS.map((dia) => ({
     dia,
@@ -82,26 +91,43 @@ export default function AgendarClient({
           <>
             <div className="mb-10">
               <h2 className="mb-4 text-lg font-semibold text-white">1. Escolha o serviço</h2>
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                {servicos.map((s) => (
-                  <button
-                    key={s.id}
-                    onClick={() => setServicoId(s.id)}
-                    className={`rounded-2xl border p-6 text-left transition-all duration-200 ${
-                      servicoId === s.id
-                        ? "border-pink-400/60 bg-pink-500/10 scale-[1.02]"
-                        : "border-white/10 bg-white/5 hover:border-white/20"
-                    }`}
-                  >
-                    <p className="font-semibold text-white">{s.name}</p>
-                    {s.description && (
-                      <p className="mt-1 text-sm text-zinc-400 line-clamp-2">{s.description}</p>
-                    )}
-                    <p className="mt-3 text-sm text-zinc-500">{s.duration}</p>
-                    <p className="mt-1 font-semibold text-pink-300">{s.price}</p>
-                  </button>
-                ))}
+
+              <div className="relative mb-6 max-w-md">
+                <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" />
+                <input
+                  value={busca}
+                  onChange={(e) => setBusca(e.target.value)}
+                  placeholder="Buscar um serviço..."
+                  className="w-full rounded-full border border-white/10 bg-white/5 py-3 pl-11 pr-4 text-sm text-white outline-none transition-colors focus:border-pink-400/40"
+                />
               </div>
+
+              {servicosFiltrados.length === 0 ? (
+                <p className="text-sm text-zinc-500">
+                  Nenhum serviço encontrado para &quot;{busca}&quot;.
+                </p>
+              ) : (
+                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                  {servicosFiltrados.map((s) => (
+                    <button
+                      key={s.id}
+                      onClick={() => setServicoId(s.id)}
+                      className={`rounded-2xl border p-6 text-left transition-all duration-200 ${
+                        servicoId === s.id
+                          ? "border-pink-400/60 bg-pink-500/10 scale-[1.02]"
+                          : "border-white/10 bg-white/5 hover:border-white/20"
+                      }`}
+                    >
+                      <p className="font-semibold text-white">{s.name}</p>
+                      {s.description && (
+                        <p className="mt-1 text-sm text-zinc-400 line-clamp-2">{s.description}</p>
+                      )}
+                      <p className="mt-3 text-sm text-zinc-500">{s.duration}</p>
+                      <p className="mt-1 font-semibold text-pink-300">{s.price}</p>
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
 
             {vagasPorDia.length === 0 ? (

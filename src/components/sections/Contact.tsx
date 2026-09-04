@@ -64,7 +64,7 @@ export default function Contact() {
 
               <textarea
                 rows={5}
-                className="w-full rounded-xl border border-white/10 bg-white/5 p-4 outline-none transition-colors focus:border-pink-400/40"
+                className="w-full resize-none rounded-xl border border-white/10 bg-white/5 p-4 outline-none transition-colors focus:border-pink-400/40"
                 placeholder="Mensagem"
               />
 
