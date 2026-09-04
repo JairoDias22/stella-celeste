@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Container from "../layout/Container";
 import { Globe, Mail, Phone, Sparkles, AtSign, MessageCircle } from "lucide-react";
+import { linkWhatsApp } from "@/lib/config/contato";
 
 export default function Footer() {
   return (
@@ -77,10 +78,15 @@ export default function Footer() {
             </h3>
 
             <div className="space-y-3 text-zinc-400">
-              <div className="flex items-center gap-3">
+              <a
+                href={linkWhatsApp("Olá! Gostaria de saber mais sobre os atendimentos da Stella Celeste.")}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-3 transition hover:text-green-400"
+              >
                 <Phone size={18} className="text-violet-400" />
-                <span>(99) 99999-9999</span>
-              </div>
+                <span>Chamar no WhatsApp</span>
+              </a>
 
               <div className="flex items-center gap-3">
                 <Mail size={18} className="text-violet-400" />

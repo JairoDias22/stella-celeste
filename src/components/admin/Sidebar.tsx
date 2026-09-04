@@ -9,6 +9,7 @@ import {
   Wallet,
   Settings,
   ClipboardList,
+  Star,
 } from "lucide-react";
 
 const links = [
@@ -31,6 +32,11 @@ const links = [
     name: "Reservas",
     href: "/admin/reservas",
     icon: ClipboardList,
+  },
+  {
+    name: "Avaliações",
+    href: "/admin/avaliacoes",
+    icon: Star,
   },
   {
     name: "Clientes",

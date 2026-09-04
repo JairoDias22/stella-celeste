@@ -7,10 +7,11 @@ import Container from "@/components/layout/Container";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { UserRound, Calendar, LogOut, Loader2, Plus, Camera } from "lucide-react";
+import { UserRound, Calendar, LogOut, Loader2, Plus, Camera, Star } from "lucide-react";
 import { updateMeuPerfil } from "@/lib/actions/minha-conta";
 import { clienteLogout } from "@/lib/actions/auth";
 import { cancelarReserva } from "@/lib/actions/agendamento";
+import { enviarAvaliacao } from "@/lib/actions/avaliacoes";
 import { comprimirImagem } from "@/lib/utils/imagem";
 import SiteLogo from "@/components/layout/SiteLogo";
 
@@ -31,9 +32,11 @@ const statusStyle: Record<string, string> = {
 export default function MinhaContaClient({
   cliente,
   reservas,
+  avaliacao,
 }: {
   cliente: { name: string; email: string; phone: string | null; bio: string | null; avatarUrl: string | null };
   reservas: Reserva[];
+  avaliacao: { nota: number; comentario: string; status: string } | null;
 }) {
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -51,6 +54,27 @@ export default function MinhaContaClient({
   const [loggingOut, setLoggingOut] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  const [avaliacaoState, setAvaliacaoState] = useState(avaliacao);
+  const [nota, setNota] = useState(avaliacao?.nota ?? 5);
+  const [comentario, setComentario] = useState(avaliacao?.comentario ?? "");
+  const [enviandoAvaliacao, setEnviandoAvaliacao] = useState(false);
+  const [erroAvaliacao, setErroAvaliacao] = useState<string | null>(null);
+
+  async function handleEnviarAvaliacao(e: React.FormEvent) {
+    e.preventDefault();
+    setErroAvaliacao(null);
+    setEnviandoAvaliacao(true);
+
+    const result = await enviarAvaliacao(nota, comentario);
+
+    setEnviandoAvaliacao(false);
+    if (!result.success) {
+      setErroAvaliacao(result.error ?? "Não foi possível enviar sua avaliação.");
+      return;
+    }
+    setAvaliacaoState({ nota, comentario, status: "pendente" });
+  }
 
   async function handleAvatarChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -293,6 +317,75 @@ export default function MinhaContaClient({
                 ))}
               </div>
             )}
+          </div>
+
+          <div className="rounded-3xl border border-white/10 bg-white/5 p-8 backdrop-blur-xl lg:col-span-3">
+            <div className="mb-6 flex items-center gap-3">
+              <div className="rounded-xl bg-violet-500/20 p-2.5 text-pink-300">
+                <Star className="h-5 w-5" />
+              </div>
+              <h2 className="text-lg font-semibold text-white">Sua avaliação</h2>
+            </div>
+
+            {avaliacaoState && (
+              <p
+                className={`mb-4 inline-block rounded-full px-3 py-1 text-xs font-medium capitalize ${
+                  avaliacaoState.status === "aprovada"
+                    ? "bg-green-500/10 text-green-400"
+                    : avaliacaoState.status === "recusada"
+                      ? "bg-red-500/10 text-red-400"
+                      : "bg-yellow-500/10 text-yellow-400"
+                }`}
+              >
+                {avaliacaoState.status === "aprovada"
+                  ? "Publicada no site"
+                  : avaliacaoState.status === "recusada"
+                    ? "Não aprovada"
+                    : "Aguardando aprovação"}
+              </p>
+            )}
+
+            <form onSubmit={handleEnviarAvaliacao} className="space-y-4">
+              {erroAvaliacao && (
+                <p className="rounded-lg bg-red-500/10 p-3 text-sm text-red-400">{erroAvaliacao}</p>
+              )}
+
+              <div>
+                <Label className="text-zinc-300">Nota</Label>
+                <div className="mt-1 flex gap-1">
+                  {[1, 2, 3, 4, 5].map((n) => (
+                    <button
+                      key={n}
+                      type="button"
+                      onClick={() => setNota(n)}
+                      className="p-0.5"
+                    >
+                      <Star
+                        className={`h-6 w-6 transition-colors ${
+                          n <= nota ? "fill-pink-300 text-pink-300" : "text-zinc-700 hover:text-zinc-500"
+                        }`}
+                      />
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <Label className="text-zinc-300">Comentário</Label>
+                <textarea
+                  value={comentario}
+                  onChange={(e) => setComentario(e.target.value)}
+                  placeholder="Conte como foi sua experiência com a Stella Celeste"
+                  rows={3}
+                  className="w-full resize-none rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white outline-none transition-colors focus:border-pink-400/40"
+                />
+              </div>
+
+              <Button type="submit" disabled={enviandoAvaliacao}>
+                {enviandoAvaliacao ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                {avaliacaoState ? "Atualizar avaliação" : "Enviar avaliação"}
+              </Button>
+            </form>
           </div>
         </div>
       </Container>
