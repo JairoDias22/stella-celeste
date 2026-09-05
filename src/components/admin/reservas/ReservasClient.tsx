@@ -54,13 +54,13 @@ export default function ReservasClient({ initialData }: { initialData: Reserva[]
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-4xl font-bold">Reservas</h1>
+        <h1 className="text-4xl font-bold font-title">Reservas</h1>
         <p className="mt-2 text-zinc-400">
           Acompanhe os agendamentos e confirme os pagamentos recebidos.
         </p>
       </div>
 
-      <div className="overflow-hidden rounded-2xl border border-white/10 bg-white/5">
+      <div className="overflow-hidden rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl">
         <table className="w-full">
           <thead className="border-b border-white/10">
             <tr>
@@ -81,7 +81,7 @@ export default function ReservasClient({ initialData }: { initialData: Reserva[]
               </tr>
             )}
             {reservas.map((r) => (
-              <tr key={r.id} className="border-b border-white/10">
+              <tr key={r.id} className="border-b border-white/10 transition-colors hover:bg-white/[0.03]">
                 <td className="p-5">
                   <p>{r.cliente.name}</p>
                   <p className="text-xs text-zinc-500">{r.cliente.phone || r.cliente.email}</p>

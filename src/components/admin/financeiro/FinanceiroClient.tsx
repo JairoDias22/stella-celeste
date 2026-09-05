@@ -66,7 +66,7 @@ export default function FinanceiroClient() {
     <div>
       <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="text-4xl font-bold">Financeiro</h1>
+          <h1 className="text-4xl font-bold font-title">Financeiro</h1>
           <p className="mt-2 text-zinc-400">
             Acompanhe o faturamento por dia, semana e mês.
           </p>

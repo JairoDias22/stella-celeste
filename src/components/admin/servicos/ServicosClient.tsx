@@ -103,7 +103,7 @@ export default function ServicosClient({
     <div>
       <div className="mb-8 flex items-center justify-between">
         <div>
-          <h1 className="text-4xl font-bold">Serviços</h1>
+          <h1 className="text-4xl font-bold font-title">Serviços</h1>
           <p className="mt-2 text-zinc-400">Gerencie todos os serviços disponíveis.</p>
         </div>
 
@@ -113,7 +113,7 @@ export default function ServicosClient({
         </Button>
       </div>
 
-      <div className="overflow-hidden rounded-2xl border border-white/10 bg-white/5">
+      <div className="overflow-hidden rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl">
         <table className="w-full">
           <thead className="border-b border-white/10">
             <tr>
@@ -133,7 +133,7 @@ export default function ServicosClient({
               </tr>
             )}
             {services.map((service) => (
-              <tr key={service.id} className="border-b border-white/10">
+              <tr key={service.id} className="border-b border-white/10 transition-colors hover:bg-white/[0.03]">
                 <td className="p-5">{service.name}</td>
                 <td className="p-5">{service.price}</td>
                 <td className="p-5">{service.duration}</td>

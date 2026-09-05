@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import PasswordInput from "@/components/ui/PasswordInput";
 import { Label } from "@/components/ui/label";
 import { Stars, Loader2 } from "lucide-react";
 import { clienteRegister } from "@/lib/actions/auth";
@@ -99,8 +100,7 @@ export default function CadastroPage() {
           </div>
           <div>
             <Label className="text-zinc-300">Senha</Label>
-            <Input
-              type="password"
+            <PasswordInput
               value={form.password}
               onChange={(e) => setForm({ ...form, password: e.target.value })}
               placeholder="Mínimo 8 caracteres"

@@ -19,7 +19,7 @@ export default async function Dashboard() {
 
   return (
     <div>
-      <h1 className="mb-10 text-4xl font-bold">Dashboard</h1>
+      <h1 className="mb-10 text-4xl font-bold font-title">Dashboard</h1>
 
       <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
         <StatCard

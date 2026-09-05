@@ -12,10 +12,13 @@ export default async function AdminLayout({
   if (!session) redirect("/admin/login");
 
   return (
-    <div className="flex min-h-screen bg-zinc-950 text-white">
+    <div className="flex min-h-screen text-white">
       <Sidebar />
 
-      <main className="flex-1">
+      <main className="relative flex-1">
+        <div className="pointer-events-none absolute left-1/3 top-0 -z-10 h-[500px] w-[500px] -translate-x-1/2 rounded-full bg-violet-700/10 blur-[160px]" />
+        <div className="pointer-events-none absolute right-0 top-1/3 -z-10 h-[400px] w-[400px] rounded-full bg-pink-500/10 blur-[150px]" />
+
         <Header adminName={session.name} />
 
         <div className="p-8">

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import PasswordInput from "@/components/ui/PasswordInput";
 import { Label } from "@/components/ui/label";
 import { Loader2, Bell, Lock, UserRound } from "lucide-react";
 import { updateAdminAccount, updateAdminPassword } from "@/lib/actions/admin-conta";
@@ -79,7 +80,7 @@ export default function ConfiguracoesClient({
   return (
     <div className="max-w-3xl">
       <div className="mb-8">
-        <h1 className="text-4xl font-bold">Configurações</h1>
+        <h1 className="text-4xl font-bold font-title">Configurações</h1>
         <p className="mt-2 text-zinc-400">Gerencie sua conta de administrador.</p>
       </div>
 
@@ -144,24 +145,21 @@ export default function ConfiguracoesClient({
         <div className="space-y-4">
           <div>
             <Label>Senha atual</Label>
-            <Input
-              type="password"
+            <PasswordInput
               value={senha.atual}
               onChange={(e) => setSenha({ ...senha, atual: e.target.value })}
             />
           </div>
           <div>
             <Label>Nova senha</Label>
-            <Input
-              type="password"
+            <PasswordInput
               value={senha.nova}
               onChange={(e) => setSenha({ ...senha, nova: e.target.value })}
             />
           </div>
           <div>
             <Label>Confirmar nova senha</Label>
-            <Input
-              type="password"
+            <PasswordInput
               value={senha.confirmar}
               onChange={(e) => setSenha({ ...senha, confirmar: e.target.value })}
             />

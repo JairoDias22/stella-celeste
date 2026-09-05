@@ -38,7 +38,7 @@ export default function AvaliacoesClient({ initialData }: { initialData: Avaliac
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-4xl font-bold">Avaliações</h1>
+        <h1 className="text-4xl font-bold font-title">Avaliações</h1>
         <p className="mt-2 text-zinc-400">
           Aprove os comentários que devem aparecer no site.
         </p>
@@ -92,7 +92,7 @@ export default function AvaliacoesClient({ initialData }: { initialData: Avaliac
       )}
 
       <h2 className="mb-4 text-lg font-semibold">Todas as avaliações</h2>
-      <div className="overflow-hidden rounded-2xl border border-white/10 bg-white/5">
+      <div className="overflow-hidden rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl">
         <table className="w-full">
           <thead className="border-b border-white/10">
             <tr>
@@ -112,7 +112,7 @@ export default function AvaliacoesClient({ initialData }: { initialData: Avaliac
               </tr>
             )}
             {outras.map((a) => (
-              <tr key={a.id} className="border-b border-white/10">
+              <tr key={a.id} className="border-b border-white/10 transition-colors hover:bg-white/[0.03]">
                 <td className="p-5">{a.cliente.name}</td>
                 <td className="p-5">{a.nota}/5</td>
                 <td className="max-w-xs truncate p-5 text-zinc-400">{a.comentario}</td>

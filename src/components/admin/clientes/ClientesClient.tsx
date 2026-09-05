@@ -125,7 +125,7 @@ export default function ClientesClient({
     <div>
       <div className="mb-8 flex items-center justify-between">
         <div>
-          <h1 className="text-4xl font-bold">Clientes</h1>
+          <h1 className="text-4xl font-bold font-title">Clientes</h1>
           <p className="mt-2 text-zinc-400">Gerencie os clientes cadastrados.</p>
         </div>
 
@@ -144,7 +144,7 @@ export default function ClientesClient({
         />
       </div>
 
-      <div className="overflow-hidden rounded-2xl border border-white/10 bg-white/5">
+      <div className="overflow-hidden rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl">
         <table className="w-full">
           <thead className="border-b border-white/10">
             <tr>
@@ -164,7 +164,7 @@ export default function ClientesClient({
               </tr>
             )}
             {clientesFiltrados.map((cliente) => (
-              <tr key={cliente.id} className="border-b border-white/10">
+              <tr key={cliente.id} className="border-b border-white/10 transition-colors hover:bg-white/[0.03]">
                 <td className="p-5">{cliente.name}</td>
                 <td className="p-5 text-zinc-400">{cliente.email}</td>
                 <td className="p-5 text-zinc-400">{cliente.phone || "—"}</td>

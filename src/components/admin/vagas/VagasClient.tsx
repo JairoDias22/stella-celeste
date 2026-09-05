@@ -127,7 +127,7 @@ export default function VagasClient({ initialData }: { initialData: Vaga[] }) {
     <div>
       <div className="mb-8 flex items-center justify-between">
         <div>
-          <h1 className="text-4xl font-bold">Vagas</h1>
+          <h1 className="text-4xl font-bold font-title">Vagas</h1>
           <p className="mt-2 text-zinc-400">
             Gerencie os horários de atendimento da semana.
           </p>
