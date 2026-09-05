@@ -13,6 +13,7 @@ const TITULOS: Record<string, string> = {
   dia: "Relatório Financeiro — Hoje",
   semana: "Relatório Financeiro — Esta Semana",
   mes: "Relatório Financeiro — Este Mês",
+  ano: "Relatório Financeiro — Este Ano",
 };
 
 function formatarData(iso: string) {
@@ -24,7 +25,7 @@ function nomeArquivo(periodo: string, extensao: string) {
   return `financeiro-stella-celeste-${periodo}-${hoje}.${extensao}`;
 }
 
-export async function exportarPDF(linhas: LinhaExportacao[], periodo: "dia" | "semana" | "mes") {
+export async function exportarPDF(linhas: LinhaExportacao[], periodo: "dia" | "semana" | "mes" | "ano") {
   const { jsPDF } = await import("jspdf");
   const autoTable = (await import("jspdf-autotable")).default;
 
@@ -55,7 +56,7 @@ export async function exportarPDF(linhas: LinhaExportacao[], periodo: "dia" | "s
   doc.save(nomeArquivo(periodo, "pdf"));
 }
 
-export async function exportarExcel(linhas: LinhaExportacao[], periodo: "dia" | "semana" | "mes") {
+export async function exportarExcel(linhas: LinhaExportacao[], periodo: "dia" | "semana" | "mes" | "ano") {
   const ExcelJS = (await import("exceljs")).default;
   const { saveAs } = await import("file-saver");
 
@@ -99,7 +100,7 @@ export async function exportarExcel(linhas: LinhaExportacao[], periodo: "dia" | 
   saveAs(new Blob([buffer]), nomeArquivo(periodo, "xlsx"));
 }
 
-export async function exportarWord(linhas: LinhaExportacao[], periodo: "dia" | "semana" | "mes") {
+export async function exportarWord(linhas: LinhaExportacao[], periodo: "dia" | "semana" | "mes" | "ano") {
   const { Document, Packer, Paragraph, Table, TableRow, TableCell, TextRun, HeadingLevel, WidthType } =
     await import("docx");
   const { saveAs } = await import("file-saver");

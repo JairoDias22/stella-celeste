@@ -152,22 +152,38 @@ export default function MinhaContaClient({
         <div className="mb-6">
           <SiteLogo />
         </div>
-        <div className="mb-10 flex items-center justify-between">
-          <div>
-            <h1 className="font-title text-4xl font-bold text-white">Minha Conta</h1>
-            <p className="mt-2 text-zinc-400">Seus dados e histórico de atendimentos.</p>
-          </div>
 
-          <Button variant="outline" className="gap-2" onClick={handleLogout} disabled={loggingOut}>
-            {loggingOut ? <Loader2 className="h-4 w-4 animate-spin" /> : <LogOut className="h-4 w-4" />}
-            Sair
-          </Button>
+        <div className="relative mb-10 overflow-hidden rounded-[28px] border border-white/10 bg-gradient-to-br from-violet-600/15 via-pink-500/10 to-transparent p-8">
+          <div className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full bg-pink-500/20 blur-3xl" />
+          <div className="relative flex flex-wrap items-center justify-between gap-6">
+            <div className="flex items-center gap-5">
+              <div className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-full border-2 border-pink-400/30 bg-violet-500/20">
+                {avatarUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={avatarUrl} alt={form.name} className="h-full w-full object-cover" />
+                ) : (
+                  <span className="text-xl font-semibold text-pink-200">
+                    {form.name.charAt(0).toUpperCase()}
+                  </span>
+                )}
+              </div>
+              <div>
+                <h1 className="font-title text-3xl font-bold text-white">{form.name || "Minha Conta"}</h1>
+                <p className="mt-1 text-sm text-zinc-400">{form.bio || "Seus dados e histórico de atendimentos."}</p>
+              </div>
+            </div>
+
+            <Button variant="outline" className="gap-2" onClick={handleLogout} disabled={loggingOut}>
+              {loggingOut ? <Loader2 className="h-4 w-4 animate-spin" /> : <LogOut className="h-4 w-4" />}
+              Sair
+            </Button>
+          </div>
         </div>
 
         <div className="grid gap-8 lg:grid-cols-3">
           <form
             onSubmit={handleSave}
-            className="rounded-3xl border border-white/10 bg-white/5 p-8 backdrop-blur-xl lg:col-span-1"
+            className="rounded-3xl border border-pink-400/10 bg-white/5 p-8 shadow-[0_0_40px_-18px_rgba(236,72,153,0.35)] backdrop-blur-xl lg:col-span-1"
           >
             <div className="mb-6 flex flex-col items-center text-center">
               <div className="relative">
@@ -262,7 +278,7 @@ export default function MinhaContaClient({
             </Button>
           </form>
 
-          <div className="rounded-3xl border border-white/10 bg-white/5 p-8 backdrop-blur-xl lg:col-span-2">
+          <div className="rounded-3xl border border-violet-400/10 bg-white/5 p-8 shadow-[0_0_40px_-18px_rgba(139,92,246,0.3)] backdrop-blur-xl lg:col-span-2">
             <div className="mb-6 flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="rounded-xl bg-violet-500/20 p-2.5 text-pink-300">
@@ -319,13 +335,17 @@ export default function MinhaContaClient({
             )}
           </div>
 
-          <div className="rounded-3xl border border-white/10 bg-white/5 p-8 backdrop-blur-xl lg:col-span-3">
+          <div className="rounded-3xl border border-pink-400/10 bg-white/5 p-8 shadow-[0_0_40px_-18px_rgba(236,72,153,0.3)] backdrop-blur-xl lg:col-span-3">
             <div className="mb-6 flex items-center gap-3">
               <div className="rounded-xl bg-violet-500/20 p-2.5 text-pink-300">
                 <Star className="h-5 w-5" />
               </div>
               <h2 className="text-lg font-semibold text-white">Sua avaliação</h2>
             </div>
+
+            <p className="mb-4 text-sm text-zinc-400">
+              Avalie sua experiência com o site e com o atendimento da Stella Celeste.
+            </p>
 
             {avaliacaoState && (
               <p
@@ -375,7 +395,7 @@ export default function MinhaContaClient({
                 <textarea
                   value={comentario}
                   onChange={(e) => setComentario(e.target.value)}
-                  placeholder="Conte como foi sua experiência com a Stella Celeste"
+                  placeholder="O que você achou do site e do atendimento? Conte sua experiência."
                   rows={3}
                   className="w-full resize-none rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white outline-none transition-colors focus:border-pink-400/40"
                 />

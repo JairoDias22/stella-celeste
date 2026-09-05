@@ -31,7 +31,7 @@ export async function getDashboardStats() {
   };
 }
 
-function getRangeInicio(periodo: "dia" | "semana" | "mes") {
+function getRangeInicio(periodo: "dia" | "semana" | "mes" | "ano") {
   const agora = new Date();
   const inicio = new Date(agora);
 
@@ -42,15 +42,18 @@ function getRangeInicio(periodo: "dia" | "semana" | "mes") {
     const diffParaSegunda = diaSemana === 0 ? 6 : diaSemana - 1;
     inicio.setDate(inicio.getDate() - diffParaSegunda);
     inicio.setHours(0, 0, 0, 0);
-  } else {
+  } else if (periodo === "mes") {
     inicio.setDate(1);
+    inicio.setHours(0, 0, 0, 0);
+  } else {
+    inicio.setMonth(0, 1);
     inicio.setHours(0, 0, 0, 0);
   }
 
   return inicio;
 }
 
-export async function getFinanceiroStats(periodo: "dia" | "semana" | "mes") {
+export async function getFinanceiroStats(periodo: "dia" | "semana" | "mes" | "ano") {
   const inicio = getRangeInicio(periodo);
 
   const reservasPagas = await prisma.reserva.findMany({
@@ -88,10 +91,28 @@ export async function getFinanceiroStats(periodo: "dia" | "semana" | "mes") {
     return { dia: dias[data.getDay()], valor: total };
   });
 
-  return { total, atendimentos, ticketMedio, porMetodo, barras };
+  // Receita mês a mês do ano atual, pro gráfico anual
+  const inicioAno = new Date();
+  inicioAno.setMonth(0, 1);
+  inicioAno.setHours(0, 0, 0, 0);
+
+  const reservasAno = await prisma.reserva.findMany({
+    where: { status: "pago", createdAt: { gte: inicioAno } },
+    select: { valor: true, createdAt: true },
+  });
+
+  const meses = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
+  const barrasAno = meses.map((mes, i) => {
+    const total = reservasAno
+      .filter((r) => new Date(r.createdAt).getMonth() === i)
+      .reduce((acc, r) => acc + Number(r.valor), 0);
+    return { mes, valor: total };
+  });
+
+  return { total, atendimentos, ticketMedio, porMetodo, barras, barrasAno };
 }
 
-export async function getReservasParaExportacao(periodo: "dia" | "semana" | "mes") {
+export async function getReservasParaExportacao(periodo: "dia" | "semana" | "mes" | "ano") {
   const inicio = getRangeInicio(periodo);
 
   const reservas = await prisma.reserva.findMany({

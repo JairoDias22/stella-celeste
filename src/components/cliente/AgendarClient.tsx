@@ -38,7 +38,10 @@ export default function AgendarClient({
     const servicoDaUrl = searchParams.get("servico");
     return servicoDaUrl && servicos.some((s) => s.id === servicoDaUrl) ? servicoDaUrl : null;
   });
-  const [vagaId, setVagaId] = useState<string | null>(null);
+  const [vagaId, setVagaId] = useState<string | null>(() => {
+    const vagaDaUrl = searchParams.get("vaga");
+    return vagaDaUrl && vagas.some((v) => v.id === vagaDaUrl) ? vagaDaUrl : null;
+  });
   const [busca, setBusca] = useState("");
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);

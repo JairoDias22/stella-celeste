@@ -6,7 +6,7 @@ import StatCard from "@/components/admin/StatCard";
 import { getFinanceiroStats, getReservasParaExportacao } from "@/lib/actions/dashboard";
 import { exportarPDF, exportarExcel, exportarWord } from "@/lib/utils/exportar-financeiro";
 
-type Periodo = "dia" | "semana" | "mes";
+type Periodo = "dia" | "semana" | "mes" | "ano";
 
 type Stats = {
   total: number;
@@ -14,6 +14,7 @@ type Stats = {
   ticketMedio: number;
   porMetodo: { pix: number; cartao: number };
   barras: { dia: string; valor: number }[];
+  barrasAno: { mes: string; valor: number }[];
 };
 
 const moeda = (v: number) =>
@@ -74,7 +75,7 @@ export default function FinanceiroClient() {
 
         <div className="flex flex-wrap items-center gap-3">
           <div className="flex gap-2 rounded-full border border-white/10 bg-white/5 p-1">
-            {(["dia", "semana", "mes"] as Periodo[]).map((p) => (
+            {(["dia", "semana", "mes", "ano"] as Periodo[]).map((p) => (
               <button
                 key={p}
                 onClick={() => setPeriodo(p)}
@@ -84,7 +85,7 @@ export default function FinanceiroClient() {
                     : "text-zinc-400 hover:text-white"
                 }`}
               >
-                {p === "mes" ? "Mês" : p}
+                {p === "mes" ? "Mês" : p === "ano" ? "Ano" : p}
               </button>
             ))}
           </div>
@@ -150,24 +151,46 @@ export default function FinanceiroClient() {
 
           <div className="mt-10 grid gap-6 lg:grid-cols-3">
             <div className="rounded-2xl border border-white/10 bg-white/5 p-8 lg:col-span-2">
-              <h2 className="mb-6 text-2xl font-semibold">Receita dos últimos 7 dias</h2>
+              <h2 className="mb-6 text-2xl font-semibold">
+                {periodo === "ano" ? "Receita mês a mês (ano atual)" : "Receita dos últimos 7 dias"}
+              </h2>
 
-              <div className="flex h-64 items-end gap-4">
-                {stats.barras.map((b, i) => (
-                  <div key={i} className="flex flex-1 flex-col items-center gap-2">
-                    <div className="flex h-full w-full items-end">
-                      <div
-                        className="w-full rounded-t-lg bg-gradient-to-t from-violet-600 to-fuchsia-500 transition-all duration-700 ease-out"
-                        style={{ height: `${(b.valor / maxBarra) * 100}%`, minHeight: b.valor > 0 ? "4px" : "0" }}
-                        title={moeda(b.valor)}
-                      />
+              {periodo === "ano" ? (
+                <div className="flex h-64 items-end gap-2">
+                  {stats.barrasAno.map((b, i) => {
+                    const maxBarraAno = Math.max(1, ...stats.barrasAno.map((x) => x.valor));
+                    return (
+                      <div key={i} className="flex flex-1 flex-col items-center gap-2">
+                        <div className="flex h-full w-full items-end">
+                          <div
+                            className="w-full rounded-t-lg bg-gradient-to-t from-violet-600 to-fuchsia-500 transition-all duration-700 ease-out"
+                            style={{ height: `${(b.valor / maxBarraAno) * 100}%`, minHeight: b.valor > 0 ? "4px" : "0" }}
+                            title={moeda(b.valor)}
+                          />
+                        </div>
+                        <span className="text-[11px] text-zinc-500">{b.mes}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="flex h-64 items-end gap-4">
+                  {stats.barras.map((b, i) => (
+                    <div key={i} className="flex flex-1 flex-col items-center gap-2">
+                      <div className="flex h-full w-full items-end">
+                        <div
+                          className="w-full rounded-t-lg bg-gradient-to-t from-violet-600 to-fuchsia-500 transition-all duration-700 ease-out"
+                          style={{ height: `${(b.valor / maxBarra) * 100}%`, minHeight: b.valor > 0 ? "4px" : "0" }}
+                          title={moeda(b.valor)}
+                        />
+                      </div>
+                      <span className="text-xs text-zinc-500">{b.dia}</span>
                     </div>
-                    <span className="text-xs text-zinc-500">{b.dia}</span>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
 
-              {stats.barras.every((b) => b.valor === 0) && (
+              {periodo !== "ano" && stats.barras.every((b) => b.valor === 0) && (
                 <p className="mt-4 text-xs text-zinc-600">
                   Nenhum pagamento registrado nos últimos 7 dias ainda.
                 </p>

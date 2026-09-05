@@ -17,6 +17,10 @@ export default async function Testimonials() {
           <h2 className="mt-6 text-5xl font-bold text-white">
             O que dizem nossos clientes
           </h2>
+
+          <p className="mx-auto mt-4 max-w-2xl text-zinc-400">
+            Avaliações reais sobre o site e o atendimento da Stella Celeste.
+          </p>
         </AnimatedSection>
 
         {avaliacoes.length === 0 ? (

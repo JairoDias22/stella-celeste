@@ -1,6 +1,8 @@
+import Link from "next/link";
 import Container from "../layout/Container";
 import { prisma } from "@/lib/prisma";
 import AnimatedSection from "../layout/AnimatedSection";
+import { CheckCircle2, XCircle } from "lucide-react";
 
 const ORDEM_DIAS = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado", "Domingo"];
 
@@ -27,8 +29,18 @@ export default async function WeeklySlots() {
           </h2>
 
           <p className="mx-auto mt-6 max-w-3xl text-lg text-zinc-400">
-            Reserve sua consulta antes que as vagas sejam preenchidas.
+            Clique em um horário disponível abaixo para ir direto pro agendamento.
           </p>
+
+          {/* Legenda */}
+          <div className="mt-6 flex items-center justify-center gap-6 text-sm">
+            <span className="flex items-center gap-2 text-green-400">
+              <CheckCircle2 className="h-4 w-4" /> Disponível
+            </span>
+            <span className="flex items-center gap-2 text-zinc-500">
+              <XCircle className="h-4 w-4" /> Ocupado
+            </span>
+          </div>
         </AnimatedSection>
 
         {porDia.length === 0 ? (
@@ -49,23 +61,31 @@ export default async function WeeklySlots() {
                   <div className="mb-6 flex items-center justify-between">
                     <h3 className="text-xl font-semibold text-white">{dia}</h3>
                     <span className="font-semibold text-pink-300">
-                      {disponiveis} / {horarios.length}
+                      {disponiveis} / {horarios.length} livres
                     </span>
                   </div>
 
                   <div className="flex flex-wrap gap-2">
-                    {horarios.map((h) => (
-                      <span
-                        key={h.id}
-                        className={`rounded-full px-3 py-1.5 text-sm font-medium transition-transform hover:scale-105 ${
-                          h.available
-                            ? "bg-green-500/15 text-green-400"
-                            : "bg-zinc-700/40 text-zinc-500 line-through"
-                        }`}
-                      >
-                        {h.time}
-                      </span>
-                    ))}
+                    {horarios.map((h) =>
+                      h.available ? (
+                        <Link
+                          key={h.id}
+                          href={`/agendar?vaga=${h.id}`}
+                          className="flex items-center gap-1.5 rounded-full bg-green-500/15 px-3 py-1.5 text-sm font-medium text-green-400 transition-all hover:scale-105 hover:bg-green-500/25"
+                        >
+                          <CheckCircle2 className="h-3.5 w-3.5" />
+                          {h.time}
+                        </Link>
+                      ) : (
+                        <span
+                          key={h.id}
+                          className="flex items-center gap-1.5 rounded-full bg-zinc-700/30 px-3 py-1.5 text-sm font-medium text-zinc-500"
+                        >
+                          <XCircle className="h-3.5 w-3.5" />
+                          <span className="line-through">{h.time}</span>
+                        </span>
+                      )
+                    )}
                   </div>
                 </AnimatedSection>
               );
