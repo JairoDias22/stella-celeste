@@ -1,7 +1,7 @@
 import Container from "../layout/Container";
 import { Phone, Globe, MessageCircle, Sparkles, Clock, ShieldCheck, Heart } from "lucide-react";
 import AnimatedSection from "../layout/AnimatedSection";
-import { linkWhatsApp } from "@/lib/config/contato";
+import { linkWhatsApp, WHATSAPP_NUMERO, INSTAGRAM_URL, INSTAGRAM_HANDLE } from "@/lib/config/contato";
 
 const destaques = [
   { icon: Clock, texto: "Resposta rápida, direto no seu WhatsApp" },
@@ -76,12 +76,17 @@ export default function Contact() {
                 <div className="mt-8 flex flex-col items-center gap-3 border-t border-white/10 pt-6 text-zinc-400 sm:flex-row sm:justify-center sm:gap-8">
                   <div className="flex items-center gap-2">
                     <Phone size={16} className="text-green-400" />
-                    <span>(99) 99999-9999</span>
+                    <span>+{WHATSAPP_NUMERO.slice(0, 2)} {WHATSAPP_NUMERO.slice(2, 4)} {WHATSAPP_NUMERO.slice(4, 9)}-{WHATSAPP_NUMERO.slice(9)}</span>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <a
+                    href={INSTAGRAM_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 transition hover:text-green-400"
+                  >
                     <Globe size={16} className="text-green-400" />
-                    <span>@stellaceleste</span>
-                  </div>
+                    <span>{INSTAGRAM_HANDLE}</span>
+                  </a>
                 </div>
               </div>
             </div>

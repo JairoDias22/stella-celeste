@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Container from "../layout/Container";
 import { Globe, Mail, Phone, Sparkles, AtSign, MessageCircle } from "lucide-react";
-import { linkWhatsApp } from "@/lib/config/contato";
+import { linkWhatsApp, EMAIL_CONTATO, INSTAGRAM_URL, INSTAGRAM_HANDLE } from "@/lib/config/contato";
 
 export default function Footer() {
   return (
@@ -88,15 +88,23 @@ export default function Footer() {
                 <span>Chamar no WhatsApp</span>
               </a>
 
-              <div className="flex items-center gap-3">
+              <a
+                href={`mailto:${EMAIL_CONTATO}`}
+                className="flex items-center gap-3 transition hover:text-pink-400"
+              >
                 <Mail size={18} className="text-violet-400" />
-                <span>contato@stellaceleste.com</span>
-              </div>
+                <span>{EMAIL_CONTATO}</span>
+              </a>
 
-              <div className="flex items-center gap-3">
+              <a
+                href={INSTAGRAM_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-3 transition hover:text-pink-400"
+              >
                 <Globe size={18} className="text-violet-400" />
-                <span>@stellaceleste</span>
-              </div>
+                <span>{INSTAGRAM_HANDLE}</span>
+              </a>
             </div>
           </div>
         </div>
