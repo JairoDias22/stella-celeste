@@ -20,7 +20,7 @@ type Reserva = {
   status: string;
   createdAt: Date;
   servico: { name: string };
-  vaga: { weekday: string; time: string };
+  horario: { data: Date; weekday: string; time: string };
 };
 
 const statusStyle: Record<string, string> = {
@@ -309,8 +309,7 @@ export default function MinhaContaClient({
                     <div>
                       <p className="font-medium text-white">{item.servico.name}</p>
                       <p className="text-sm text-zinc-500">
-                        {item.vaga.weekday} às {item.vaga.time} ·{" "}
-                        {new Date(item.createdAt).toLocaleDateString("pt-BR")}
+                        {item.horario.weekday}, {new Date(item.horario.data).toLocaleDateString("pt-BR")} às {item.horario.time}
                       </p>
                     </div>
                     <div className="flex items-center gap-3">

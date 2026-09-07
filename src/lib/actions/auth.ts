@@ -9,6 +9,8 @@ import {
   hashPassword,
   verifyPassword,
 } from "@/lib/auth";
+import { enviarEmail } from "@/lib/email";
+import { templateBoasVindas } from "@/lib/email-templates";
 
 // ---- Admin ----
 
@@ -60,6 +62,12 @@ export async function clienteRegister(data: {
     email: cliente.email,
     name: cliente.name,
     role: "cliente",
+  });
+
+  await enviarEmail({
+    para: cliente.email,
+    assunto: "Bem-vinda à Stella Celeste!",
+    html: templateBoasVindas(cliente.name),
   });
 
   return { success: true };

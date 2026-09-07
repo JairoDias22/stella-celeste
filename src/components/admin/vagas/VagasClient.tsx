@@ -13,12 +13,12 @@ import {
 } from "@/components/ui/dialog";
 import { Plus, Pencil, Trash2, Loader2 } from "lucide-react";
 import {
-  createVaga,
-  updateVaga,
-  deleteVaga,
-  toggleVagaDisponibilidade,
+  createDisponibilidade,
+  updateDisponibilidade,
+  deleteDisponibilidade,
+  toggleDisponibilidadeAtiva,
 } from "@/lib/actions/vagas";
-import type { Vaga } from "@/generated/prisma/client";
+import type { DisponibilidadeSemanal } from "@/generated/prisma/client";
 
 const WEEKDAYS = [
   "Segunda",
@@ -30,25 +30,25 @@ const WEEKDAYS = [
   "Domingo",
 ];
 
-export default function VagasClient({ initialData }: { initialData: Vaga[] }) {
-  const [vagas, setVagas] = useState<Vaga[]>(initialData);
+export default function VagasClient({ initialData }: { initialData: DisponibilidadeSemanal[] }) {
+  const [disponibilidades, setDisponibilidades] = useState<DisponibilidadeSemanal[]>(initialData);
   const [open, setOpen] = useState(false);
-  const [editing, setEditing] = useState<Vaga | null>(null);
-  const [form, setForm] = useState({ weekday: "Segunda", time: "", available: true });
+  const [editing, setEditing] = useState<DisponibilidadeSemanal | null>(null);
+  const [form, setForm] = useState({ weekday: "Segunda", time: "" });
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
 
   function openNew() {
     setEditing(null);
     setError(null);
-    setForm({ weekday: "Segunda", time: "", available: true });
+    setForm({ weekday: "Segunda", time: "" });
     setOpen(true);
   }
 
-  function openEdit(vaga: Vaga) {
-    setEditing(vaga);
+  function openEdit(disp: DisponibilidadeSemanal) {
+    setEditing(disp);
     setError(null);
-    setForm({ weekday: vaga.weekday, time: vaga.time, available: vaga.available });
+    setForm({ weekday: disp.weekday, time: disp.time });
     setOpen(true);
   }
 
@@ -61,20 +61,19 @@ export default function VagasClient({ initialData }: { initialData: Vaga[] }) {
     const payload = {
       weekday: form.weekday,
       time: form.time.trim(),
-      available: form.available,
     };
 
     startTransition(async () => {
       try {
         if (editing) {
-          await updateVaga(editing.id, payload);
-          setVagas((prev) =>
-            prev.map((v) => (v.id === editing.id ? { ...v, ...payload } : v))
+          await updateDisponibilidade(editing.id, payload);
+          setDisponibilidades((prev) =>
+            prev.map((d) => (d.id === editing.id ? { ...d, ...payload } : d))
           );
         } else {
-          await createVaga(payload);
-          setVagas((prev) =>
-            [...prev, { id: crypto.randomUUID(), ...payload } as Vaga].sort(
+          await createDisponibilidade(payload);
+          setDisponibilidades((prev) =>
+            [...prev, { id: crypto.randomUUID(), ...payload, ativo: true, createdAt: new Date() } as DisponibilidadeSemanal].sort(
               (a, b) =>
                 WEEKDAYS.indexOf(a.weekday) - WEEKDAYS.indexOf(b.weekday) ||
                 a.time.localeCompare(b.time)
@@ -89,38 +88,38 @@ export default function VagasClient({ initialData }: { initialData: Vaga[] }) {
   }
 
   function handleDelete(id: string) {
-    if (!confirm("Excluir este horário?")) return;
+    if (!confirm("Excluir este horário semanal?")) return;
 
     startTransition(async () => {
-      try {
-        await deleteVaga(id);
-        setVagas((prev) => prev.filter((v) => v.id !== id));
-      } catch {
-        alert("Não foi possível excluir este horário.");
+      const result = await deleteDisponibilidade(id);
+      if (!result.success) {
+        alert(result.error);
+        return;
       }
+      setDisponibilidades((prev) => prev.filter((d) => d.id !== id));
     });
   }
 
-  function handleToggle(vaga: Vaga) {
-    const novoStatus = !vaga.available;
-    setVagas((prev) =>
-      prev.map((v) => (v.id === vaga.id ? { ...v, available: novoStatus } : v))
+  function handleToggle(disp: DisponibilidadeSemanal) {
+    const novoStatus = !disp.ativo;
+    setDisponibilidades((prev) =>
+      prev.map((d) => (d.id === disp.id ? { ...d, ativo: novoStatus } : d))
     );
     startTransition(async () => {
       try {
-        await toggleVagaDisponibilidade(vaga.id, novoStatus);
+        await toggleDisponibilidadeAtiva(disp.id, novoStatus);
       } catch {
-        setVagas((prev) =>
-          prev.map((v) => (v.id === vaga.id ? { ...v, available: vaga.available } : v))
+        setDisponibilidades((prev) =>
+          prev.map((d) => (d.id === disp.id ? { ...d, ativo: disp.ativo } : d))
         );
-        alert("Não foi possível atualizar a disponibilidade.");
+        alert("Não foi possível atualizar.");
       }
     });
   }
 
-  const vagasPorDia = WEEKDAYS.map((dia) => ({
+  const porDia = WEEKDAYS.map((dia) => ({
     dia,
-    horarios: vagas.filter((v) => v.weekday === dia),
+    horarios: disponibilidades.filter((d) => d.weekday === dia),
   }));
 
   return (
@@ -129,7 +128,8 @@ export default function VagasClient({ initialData }: { initialData: Vaga[] }) {
         <div>
           <h1 className="text-4xl font-bold font-title">Vagas</h1>
           <p className="mt-2 text-zinc-400">
-            Gerencie os horários de atendimento da semana.
+            Configure sua disponibilidade semanal recorrente — o site gera automaticamente
+            os horários das próximas semanas a partir daqui.
           </p>
         </div>
 
@@ -140,7 +140,7 @@ export default function VagasClient({ initialData }: { initialData: Vaga[] }) {
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-        {vagasPorDia.map(({ dia, horarios }) => (
+        {porDia.map(({ dia, horarios }) => (
           <div
             key={dia}
             className="rounded-2xl border border-white/10 bg-white/5 p-6"
@@ -151,22 +151,22 @@ export default function VagasClient({ initialData }: { initialData: Vaga[] }) {
               <p className="text-sm text-zinc-500">Sem horários cadastrados.</p>
             ) : (
               <div className="space-y-3">
-                {horarios.map((vaga) => (
+                {horarios.map((disp) => (
                   <div
-                    key={vaga.id}
+                    key={disp.id}
                     className="flex items-center justify-between rounded-xl border border-white/10 bg-black/20 px-4 py-3"
                   >
                     <div className="flex items-center gap-3">
-                      <span className="font-medium">{vaga.time}</span>
+                      <span className="font-medium">{disp.time}</span>
                       <button
-                        onClick={() => handleToggle(vaga)}
+                        onClick={() => handleToggle(disp)}
                         className={`rounded-full px-3 py-1 text-xs font-medium transition ${
-                          vaga.available
+                          disp.ativo
                             ? "bg-green-500/15 text-green-400 hover:bg-green-500/25"
                             : "bg-zinc-500/15 text-zinc-400 hover:bg-zinc-500/25"
                         }`}
                       >
-                        {vaga.available ? "Disponível" : "Ocupado"}
+                        {disp.ativo ? "Ativo" : "Pausado"}
                       </button>
                     </div>
 
@@ -174,14 +174,14 @@ export default function VagasClient({ initialData }: { initialData: Vaga[] }) {
                       <Button
                         size="icon-sm"
                         className="bg-violet-600 hover:bg-violet-700"
-                        onClick={() => openEdit(vaga)}
+                        onClick={() => openEdit(disp)}
                       >
                         <Pencil className="h-3.5 w-3.5" />
                       </Button>
                       <Button
                         size="icon-sm"
                         className="bg-red-600 hover:bg-red-700"
-                        onClick={() => handleDelete(vaga.id)}
+                        onClick={() => handleDelete(disp.id)}
                       >
                         <Trash2 className="h-3.5 w-3.5" />
                       </Button>
@@ -226,16 +226,10 @@ export default function VagasClient({ initialData }: { initialData: Vaga[] }) {
                 onChange={(e) => setForm({ ...form, time: e.target.value })}
               />
             </div>
-            <div className="flex items-center gap-2">
-              <input
-                id="available"
-                type="checkbox"
-                checked={form.available}
-                onChange={(e) => setForm({ ...form, available: e.target.checked })}
-                className="h-4 w-4 rounded border-zinc-600 bg-transparent"
-              />
-              <Label htmlFor="available">Disponível para agendamento</Label>
-            </div>
+            <p className="text-xs text-zinc-500">
+              Isso gera automaticamente os horários das próximas 8 semanas, toda vez que
+              alguém acessar a tela de agendamento.
+            </p>
           </div>
 
           <DialogFooter>

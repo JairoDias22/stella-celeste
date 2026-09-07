@@ -18,25 +18,46 @@ model Servico {
   reservas    Reserva[]
 }
 
-model Vaga {
-  id        String   @id @default(cuid())
-  weekday   String   // "Segunda", "Terça", etc.
-  time      String   // "14:00"
-  available Boolean  @default(true)
-  reservas  Reserva[]
+// Modelo de recorrência: "toda Segunda às 14h" — configurado uma vez pelo admin.
+model DisponibilidadeSemanal {
+  id        String    @id @default(cuid())
+  weekday   String    // "Segunda", "Terça", etc.
+  time      String    // "14:00"
+  ativo     Boolean   @default(true) // false = não gera mais horários novos
+  createdAt DateTime  @default(now())
+  horarios  Horario[]
+}
+
+// Ocorrência real, com data específica, gerada a partir da DisponibilidadeSemanal.
+model Horario {
+  id                 String   @id @default(cuid())
+  data               DateTime // data específica desse horário (meia-noite, UTC)
+  weekday            String
+  time               String
+  available          Boolean  @default(true)
+  createdAt          DateTime @default(now())
+
+  disponibilidade    DisponibilidadeSemanal @relation(fields: [disponibilidadeId], references: [id], onDelete: Cascade)
+  disponibilidadeId  String
+
+  reservas           Reserva[]
+
+  @@unique([disponibilidadeId, data])
 }
 
 model Cliente {
-  id           String     @id @default(cuid())
-  name         String
-  email        String     @unique
-  phone        String?
-  passwordHash String
-  avatarUrl    String?    @db.Text
-  bio          String?
-  createdAt    DateTime   @default(now())
-  reservas     Reserva[]
-  avaliacao    Avaliacao?
+  id                  String     @id @default(cuid())
+  name                String
+  email               String     @unique
+  phone               String?
+  passwordHash        String
+  avatarUrl           String?    @db.Text
+  bio                 String?
+  resetTokenHash      String?
+  resetTokenExpiresAt DateTime?
+  createdAt           DateTime   @default(now())
+  reservas            Reserva[]
+  avaliacao           Avaliacao?
 }
 
 model Avaliacao {
@@ -52,11 +73,13 @@ model Avaliacao {
 }
 
 model Admin {
-  id           String   @id @default(cuid())
-  name         String
-  email        String   @unique
-  passwordHash String
-  createdAt    DateTime @default(now())
+  id                  String   @id @default(cuid())
+  name                String
+  email               String   @unique
+  passwordHash        String
+  resetTokenHash      String?
+  resetTokenExpiresAt DateTime?
+  createdAt           DateTime @default(now())
 }
 
 model Reserva {
@@ -69,8 +92,8 @@ model Reserva {
   servico    Servico  @relation(fields: [servicoId], references: [id])
   servicoId  String
 
-  vaga       Vaga     @relation(fields: [vagaId], references: [id])
-  vagaId     String
+  horario    Horario  @relation(fields: [horarioId], references: [id])
+  horarioId  String
 
   cliente    Cliente  @relation(fields: [clienteId], references: [id])
   clienteId  String

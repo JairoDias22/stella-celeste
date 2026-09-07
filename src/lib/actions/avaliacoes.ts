@@ -3,6 +3,8 @@
 import { prisma } from "@/lib/prisma";
 import { getClienteSession } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
+import { enviarEmail } from "@/lib/email";
+import { templateAvaliacaoAprovada } from "@/lib/email-templates";
 
 // ---- Cliente ----
 
@@ -61,7 +63,19 @@ export async function atualizarStatusAvaliacao(
   id: string,
   status: "pendente" | "aprovada" | "recusada"
 ) {
-  await prisma.avaliacao.update({ where: { id }, data: { status } });
+  const avaliacao = await prisma.avaliacao.update({
+    where: { id },
+    data: { status },
+    include: { cliente: { select: { email: true } } },
+  });
+
+  if (status === "aprovada") {
+    await enviarEmail({
+      para: avaliacao.cliente.email,
+      assunto: "Sua avaliação foi aprovada!",
+      html: templateAvaliacaoAprovada(),
+    });
+  }
 
   revalidatePath("/admin/avaliacoes");
   revalidatePath("/");

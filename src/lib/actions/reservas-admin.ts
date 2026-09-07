@@ -9,7 +9,7 @@ export async function getReservasAdmin() {
     include: {
       cliente: { select: { name: true, email: true, phone: true } },
       servico: { select: { name: true } },
-      vaga: { select: { weekday: true, time: true } },
+      horario: { select: { data: true, weekday: true, time: true } },
     },
   });
 
@@ -32,9 +32,9 @@ export async function atualizarStatusReserva(
     },
   });
 
-  // Se foi cancelada, devolve a vaga pra disponível
+  // Se foi cancelada, devolve o horário pra disponível
   if (status === "cancelado" && reserva.status !== "cancelado") {
-    await prisma.vaga.update({ where: { id: reserva.vagaId }, data: { available: true } });
+    await prisma.horario.update({ where: { id: reserva.horarioId }, data: { available: true } });
   }
 
   revalidatePath("/admin/reservas");

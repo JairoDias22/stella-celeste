@@ -12,7 +12,7 @@ type Reserva = {
   createdAt: Date;
   cliente: { name: string; email: string; phone: string | null };
   servico: { name: string };
-  vaga: { weekday: string; time: string };
+  horario: { data: Date; weekday: string; time: string };
 };
 
 const statusStyle: Record<string, string> = {
@@ -88,7 +88,7 @@ export default function ReservasClient({ initialData }: { initialData: Reserva[]
                 </td>
                 <td className="p-5">{r.servico.name}</td>
                 <td className="p-5">
-                  {r.vaga.weekday} {r.vaga.time}
+                  {r.horario.weekday} {new Date(r.horario.data).toLocaleDateString("pt-BR")} {r.horario.time}
                 </td>
                 <td className="p-5">
                   {Number(r.valor).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}

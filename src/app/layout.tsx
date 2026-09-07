@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Cinzel } from "next/font/google";
 import "./globals.css";
 import Background from "@/components/layout/Background";
+import { SITE_URL } from "@/lib/config/site";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -14,8 +15,34 @@ const cinzel = Cinzel({
 });
 
 export const metadata: Metadata = {
-  title: "Stella Celeste",
-  description: "Consultas espirituais e leitura de cartas.",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: "Stella Celeste — Consultas Espirituais e Leitura de Cartas",
+    template: "%s | Stella Celeste",
+  },
+  description:
+    "Consultas espirituais e leitura de cartas com a Stella Celeste. Agende seu atendimento online, com acolhimento, sigilo e orientação personalizada.",
+  keywords: [
+    "cartomante",
+    "leitura de cartas",
+    "tarot",
+    "consulta espiritual",
+    "cartomancia",
+    "Stella Celeste",
+  ],
+  openGraph: {
+    title: "Stella Celeste — Consultas Espirituais e Leitura de Cartas",
+    description:
+      "Agende sua consulta espiritual com a Stella Celeste. Acolhimento, sigilo e orientação personalizada.",
+    url: SITE_URL,
+    siteName: "Stella Celeste",
+    locale: "pt_BR",
+    type: "website",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default function RootLayout({

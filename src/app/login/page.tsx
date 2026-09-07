@@ -87,7 +87,12 @@ export default function LoginPage() {
             </div>
 
             <div>
-              <Label className="text-zinc-300">Senha</Label>
+              <div className="flex items-center justify-between">
+                <Label className="text-zinc-300">Senha</Label>
+                <Link href="/esqueci-senha" className="text-xs text-zinc-500 hover:text-pink-300">
+                  Esqueci minha senha
+                </Link>
+              </div>
               <PasswordInput
                 value={form.password}
                 onChange={(e) => setForm({ ...form, password: e.target.value })}

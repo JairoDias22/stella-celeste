@@ -1,8 +1,8 @@
 import VagasClient from "@/components/admin/vagas/VagasClient";
-import { getVagas } from "@/lib/actions/vagas";
+import { getDisponibilidades } from "@/lib/actions/vagas";
 
 export default async function VagasPage() {
-  const vagas = await getVagas();
+  const disponibilidades = await getDisponibilidades();
 
-  return <VagasClient initialData={vagas} />;
+  return <VagasClient initialData={disponibilidades} />;
 }

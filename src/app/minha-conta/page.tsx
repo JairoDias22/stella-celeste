@@ -24,7 +24,7 @@ export default async function MinhaContaPage() {
             status: true,
             createdAt: true,
             servico: { select: { name: true } },
-            vaga: { select: { weekday: true, time: true } },
+            horario: { select: { data: true, weekday: true, time: true } },
           },
         },
       },

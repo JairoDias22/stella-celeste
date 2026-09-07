@@ -1,20 +1,25 @@
 import Link from "next/link";
 import Container from "../layout/Container";
-import { prisma } from "@/lib/prisma";
 import AnimatedSection from "../layout/AnimatedSection";
 import { CheckCircle2, XCircle } from "lucide-react";
+import { getHorariosProximos7Dias } from "@/lib/actions/horarios";
 
-const ORDEM_DIAS = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado", "Domingo"];
+function formatarDataCurta(data: Date) {
+  return new Date(data).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" });
+}
 
 export default async function WeeklySlots() {
-  const vagas = await prisma.vaga.findMany({
-    orderBy: [{ weekday: "asc" }, { time: "asc" }],
-  });
+  const horarios = await getHorariosProximos7Dias();
 
-  const porDia = ORDEM_DIAS.map((dia) => ({
-    dia,
-    horarios: vagas.filter((v) => v.weekday === dia),
-  })).filter((d) => d.horarios.length > 0);
+  const porDia = Array.from(
+    horarios.reduce((mapa, h) => {
+      const chave = new Date(h.data).toDateString();
+      if (!mapa.has(chave)) mapa.set(chave, { data: h.data, weekday: h.weekday, horarios: [] as typeof horarios });
+      mapa.get(chave)!.horarios.push(h);
+      return mapa;
+    }, new Map<string, { data: Date; weekday: string; horarios: typeof horarios }>())
+    .values()
+  ).sort((a, b) => new Date(a.data).getTime() - new Date(b.data).getTime());
 
   return (
     <section id="vagas" className="py-28">
@@ -32,7 +37,6 @@ export default async function WeeklySlots() {
             Clique em um horário disponível abaixo para ir direto pro agendamento.
           </p>
 
-          {/* Legenda */}
           <div className="mt-6 flex items-center justify-center gap-6 text-sm">
             <span className="flex items-center gap-2 text-green-400">
               <CheckCircle2 className="h-4 w-4" /> Disponível
@@ -49,28 +53,31 @@ export default async function WeeklySlots() {
           </p>
         ) : (
           <div className="mt-16 grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-            {porDia.map(({ dia, horarios }, i) => {
-              const disponiveis = horarios.filter((h) => h.available).length;
+            {porDia.map(({ data, weekday, horarios: horariosDoDia }, i) => {
+              const disponiveis = horariosDoDia.filter((h) => h.available).length;
 
               return (
                 <AnimatedSection
-                  key={dia}
+                  key={data.toString()}
                   delay={i * 0.08}
                   className="rounded-3xl border border-white/10 bg-white/5 p-8 transition-all duration-300 hover:border-violet-400/40"
                 >
                   <div className="mb-6 flex items-center justify-between">
-                    <h3 className="text-xl font-semibold text-white">{dia}</h3>
+                    <div>
+                      <h3 className="text-xl font-semibold text-white">{weekday}</h3>
+                      <p className="text-xs text-zinc-500">{formatarDataCurta(data)}</p>
+                    </div>
                     <span className="font-semibold text-pink-300">
-                      {disponiveis} / {horarios.length} livres
+                      {disponiveis} / {horariosDoDia.length} livres
                     </span>
                   </div>
 
                   <div className="flex flex-wrap gap-2">
-                    {horarios.map((h) =>
+                    {horariosDoDia.map((h) =>
                       h.available ? (
                         <Link
                           key={h.id}
-                          href={`/agendar?vaga=${h.id}`}
+                          href={`/agendar?horario=${h.id}`}
                           className="flex items-center gap-1.5 rounded-full bg-green-500/15 px-3 py-1.5 text-sm font-medium text-green-400 transition-all hover:scale-105 hover:bg-green-500/25"
                         >
                           <CheckCircle2 className="h-3.5 w-3.5" />
