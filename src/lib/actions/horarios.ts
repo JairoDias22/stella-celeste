@@ -14,10 +14,20 @@ const WEEKDAY_INDEX: Record<string, number> = {
   Sábado: 6,
 };
 
-function inicioDoDia(data: Date) {
-  const d = new Date(data);
-  d.setHours(0, 0, 0, 0);
-  return d;
+const WEEKDAY_NOMES = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
+
+// Todo cálculo de data usa UTC de propósito — isso evita que o resultado mude
+// dependendo de o código estar rodando no seu computador (fuso do Brasil) ou no
+// servidor da Vercel (fuso UTC), que geram "meia-noite" em momentos diferentes.
+function hojeUTC() {
+  const agora = new Date();
+  return new Date(Date.UTC(agora.getUTCFullYear(), agora.getUTCMonth(), agora.getUTCDate()));
+}
+
+function somarDiasUTC(data: Date, dias: number) {
+  const nova = new Date(data);
+  nova.setUTCDate(nova.getUTCDate() + dias);
+  return nova;
 }
 
 /**
@@ -30,25 +40,31 @@ export async function garantirHorariosGerados() {
     where: { ativo: true },
   });
 
-  const hoje = inicioDoDia(new Date());
+  const hoje = hojeUTC();
 
   for (const disp of disponibilidades) {
     const alvo = WEEKDAY_INDEX[disp.weekday];
     if (alvo === undefined) continue;
 
+    const diasAteAlvo = (alvo - hoje.getUTCDay() + 7) % 7;
+    const primeiraOcorrencia = somarDiasUTC(hoje, diasAteAlvo);
+
     for (let semana = 0; semana < SEMANAS_A_FRENTE; semana++) {
-      const diasAteAlvo = (alvo - hoje.getDay() + 7) % 7;
-      const data = new Date(hoje);
-      data.setDate(hoje.getDate() + diasAteAlvo + semana * 7);
+      const data = somarDiasUTC(primeiraOcorrencia, semana * 7);
+
+      // O rótulo do dia da semana é sempre calculado a partir da data real —
+      // nunca copiado direto da disponibilidade — pra nunca poder ficar
+      // dessincronizado da data de verdade.
+      const weekdayReal = WEEKDAY_NOMES[data.getUTCDay()];
 
       await prisma.horario.upsert({
         where: {
           disponibilidadeId_data: { disponibilidadeId: disp.id, data },
         },
-        update: {},
+        update: { weekday: weekdayReal, time: disp.time },
         create: {
           data,
-          weekday: disp.weekday,
+          weekday: weekdayReal,
           time: disp.time,
           disponibilidadeId: disp.id,
         },
@@ -61,9 +77,8 @@ export async function garantirHorariosGerados() {
 export async function getHorariosProximos7Dias() {
   await garantirHorariosGerados();
 
-  const hoje = inicioDoDia(new Date());
-  const em7Dias = new Date(hoje);
-  em7Dias.setDate(hoje.getDate() + 7);
+  const hoje = hojeUTC();
+  const em7Dias = somarDiasUTC(hoje, 7);
 
   return prisma.horario.findMany({
     where: { data: { gte: hoje, lt: em7Dias } },
@@ -75,7 +90,7 @@ export async function getHorariosProximos7Dias() {
 export async function getHorariosParaAgendamento() {
   await garantirHorariosGerados();
 
-  const hoje = inicioDoDia(new Date());
+  const hoje = hojeUTC();
 
   return prisma.horario.findMany({
     where: { available: true, data: { gte: hoje } },

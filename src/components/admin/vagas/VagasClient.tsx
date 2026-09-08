@@ -19,6 +19,7 @@ import {
   toggleDisponibilidadeAtiva,
 } from "@/lib/actions/vagas";
 import type { DisponibilidadeSemanal } from "@/generated/prisma/client";
+import CustomSelect from "@/components/ui/CustomSelect";
 
 const WEEKDAYS = [
   "Segunda",
@@ -206,17 +207,11 @@ export default function VagasClient({ initialData }: { initialData: Disponibilid
             )}
             <div>
               <Label>Dia da semana</Label>
-              <select
+              <CustomSelect
                 value={form.weekday}
-                onChange={(e) => setForm({ ...form, weekday: e.target.value })}
-                className="h-9 w-full rounded-3xl border border-transparent bg-input/50 px-3 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/30"
-              >
-                {WEEKDAYS.map((dia) => (
-                  <option key={dia} value={dia}>
-                    {dia}
-                  </option>
-                ))}
-              </select>
+                onChange={(weekday) => setForm({ ...form, weekday })}
+                options={WEEKDAYS.map((dia) => ({ value: dia, label: dia }))}
+              />
             </div>
             <div>
               <Label>Horário</Label>

@@ -4,7 +4,7 @@ import { useState, useTransition } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Container from "@/components/layout/Container";
 import { Button } from "@/components/ui/button";
-import { Loader2, CheckCircle2, Search } from "lucide-react";
+import { Loader2, CheckCircle2, Search, Calendar } from "lucide-react";
 import { criarReserva } from "@/lib/actions/agendamento";
 import { formatarMoeda, parsePrecoParaNumero } from "@/lib/utils/money";
 import SiteLogo from "@/components/layout/SiteLogo";
@@ -26,6 +26,14 @@ type Horario = {
 
 function formatarData(data: Date) {
   return new Date(data).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric" });
+}
+
+function NumeroPasso({ numero }: { numero: number }) {
+  return (
+    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-violet-600 to-pink-500 text-sm font-bold text-white shadow-[0_0_15px_-3px_rgba(236,72,153,0.6)]">
+      {numero}
+    </span>
+  );
 }
 
 export default function AgendarClient({
@@ -108,7 +116,10 @@ export default function AgendarClient({
         ) : (
           <>
             <div className="mb-10">
-              <h2 className="mb-4 text-lg font-semibold text-white">1. Escolha o serviço</h2>
+              <div className="mb-4 flex items-center gap-3">
+                <NumeroPasso numero={1} />
+                <h2 className="text-lg font-semibold text-white">Escolha o serviço</h2>
+              </div>
 
               <div className="relative mb-6 max-w-md">
                 <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" />
@@ -130,12 +141,15 @@ export default function AgendarClient({
                     <button
                       key={s.id}
                       onClick={() => setServicoId(s.id)}
-                      className={`rounded-2xl border p-6 text-left transition-all duration-200 ${
+                      className={`relative rounded-2xl border p-6 text-left transition-all duration-200 ${
                         servicoId === s.id
-                          ? "border-pink-400/60 bg-pink-500/10 scale-[1.02]"
+                          ? "border-pink-400/60 bg-pink-500/10 scale-[1.02] shadow-[0_0_30px_-10px_rgba(236,72,153,0.5)]"
                           : "border-white/10 bg-white/5 hover:border-white/20"
                       }`}
                     >
+                      {servicoId === s.id && (
+                        <CheckCircle2 className="absolute right-4 top-4 h-5 w-5 text-pink-300" />
+                      )}
                       <p className="font-semibold text-white">{s.name}</p>
                       {s.description && (
                         <p className="mt-1 text-sm text-zinc-400 line-clamp-2">{s.description}</p>
@@ -152,23 +166,41 @@ export default function AgendarClient({
               <p className="text-zinc-500">Nenhum horário disponível no momento.</p>
             ) : (
               <div className="mb-10">
-                <h2 className="mb-4 text-lg font-semibold text-white">2. Escolha o horário</h2>
+                <div className="mb-2 flex items-center gap-3">
+                  <NumeroPasso numero={2} />
+                  <h2 className="text-lg font-semibold text-white">Escolha o horário</h2>
+                </div>
+
+                <p className="mb-5 ml-10 flex items-center gap-2 text-sm text-green-400">
+                  <CheckCircle2 className="h-4 w-4" />
+                  Todos os horários abaixo estão disponíveis — é só clicar em um deles
+                </p>
+
                 <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                   {horariosPorData.map(({ data, weekday, horarios: horariosDoDia }) => (
-                    <div key={data.toString()} className="rounded-2xl border border-white/10 bg-white/5 p-5">
-                      <p className="font-semibold text-white">{weekday}</p>
-                      <p className="mb-3 text-xs text-zinc-500">{formatarData(data)}</p>
+                    <div
+                      key={data.toString()}
+                      className="rounded-2xl border border-white/10 bg-white/5 p-5 transition-colors hover:border-violet-400/30"
+                    >
+                      <div className="mb-3 flex items-center gap-2">
+                        <Calendar className="h-4 w-4 text-violet-400" />
+                        <div>
+                          <p className="font-semibold text-white">{weekday}</p>
+                          <p className="text-xs text-zinc-500">{formatarData(data)}</p>
+                        </div>
+                      </div>
                       <div className="flex flex-wrap gap-2">
                         {horariosDoDia.map((h) => (
                           <button
                             key={h.id}
                             onClick={() => setHorarioId(h.id)}
-                            className={`rounded-full px-3 py-1.5 text-sm font-medium transition-all duration-200 ${
+                            className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium transition-all duration-200 ${
                               horarioId === h.id
-                                ? "bg-violet-600 text-white scale-105"
-                                : "bg-black/20 text-zinc-300 hover:bg-black/30"
+                                ? "bg-gradient-to-r from-violet-600 to-pink-500 text-white scale-105 shadow-[0_0_15px_-4px_rgba(236,72,153,0.6)]"
+                                : "bg-green-500/10 text-green-400 hover:bg-green-500/20"
                             }`}
                           >
+                            <CheckCircle2 className="h-3.5 w-3.5" />
                             {h.time}
                           </button>
                         ))}
@@ -205,7 +237,11 @@ export default function AgendarClient({
                     <p className="mt-4 rounded-lg bg-red-500/10 p-3 text-sm text-red-400">{error}</p>
                   )}
 
-                  <Button className="mt-4 transition-transform hover:scale-105" onClick={handleConfirmar} disabled={isPending}>
+                  <Button
+                    className="mt-4 bg-gradient-to-r from-violet-600 to-pink-500 transition-transform hover:scale-105"
+                    onClick={handleConfirmar}
+                    disabled={isPending}
+                  >
                     {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                     Confirmar agendamento
                   </Button>

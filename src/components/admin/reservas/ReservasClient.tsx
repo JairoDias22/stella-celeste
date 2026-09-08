@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { Loader2 } from "lucide-react";
 import { atualizarStatusReserva } from "@/lib/actions/reservas-admin";
+import CustomSelect from "@/components/ui/CustomSelect";
 
 type Reserva = {
   id: string;
@@ -103,14 +104,15 @@ export default function ReservasClient({ initialData }: { initialData: Reserva[]
                   {r.status === "pendente" ? (
                     editandoId === r.id ? (
                       <div className="flex items-center gap-2">
-                        <select
+                        <CustomSelect
                           value={metodo}
-                          onChange={(e) => setMetodo(e.target.value as "pix" | "cartao")}
-                          className="h-8 rounded-full border border-white/10 bg-black/30 px-2 text-xs"
-                        >
-                          <option value="pix">PIX</option>
-                          <option value="cartao">Cartão</option>
-                        </select>
+                          onChange={(v) => setMetodo(v as "pix" | "cartao")}
+                          options={[
+                            { value: "pix", label: "PIX" },
+                            { value: "cartao", label: "Cartão" },
+                          ]}
+                          className="w-28"
+                        />
                         <button
                           onClick={() => marcarComoPago(r.id)}
                           disabled={isPending}
