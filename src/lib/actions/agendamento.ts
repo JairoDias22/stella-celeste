@@ -76,6 +76,7 @@ export async function criarReserva(servicoId: string, horarioId: string) {
   revalidatePath("/minha-conta");
   revalidatePath("/");
   revalidatePath("/admin/reservas");
+  revalidatePath("/agendar");
 
   return { success: true, reservaId: reserva.id };
 }
@@ -101,6 +102,7 @@ export async function cancelarReserva(reservaId: string) {
   revalidatePath("/minha-conta");
   revalidatePath("/");
   revalidatePath("/admin/reservas");
+  revalidatePath("/agendar");
 
   return { success: true };
 }

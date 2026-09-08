@@ -145,7 +145,8 @@ export default function ClientesClient({
       </div>
 
       <div className="overflow-hidden rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl">
-        <table className="w-full">
+        <div className="overflow-x-auto">
+        <table className="w-full min-w-[640px]">
           <thead className="border-b border-white/10">
             <tr>
               <th className="p-5 text-left">Nome</th>
@@ -191,6 +192,7 @@ export default function ClientesClient({
             ))}
           </tbody>
         </table>
+        </div>
       </div>
 
       <Dialog open={open} onOpenChange={setOpen}>

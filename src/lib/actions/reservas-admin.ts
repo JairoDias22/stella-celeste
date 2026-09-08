@@ -41,6 +41,7 @@ export async function atualizarStatusReserva(
   revalidatePath("/admin/dashboard");
   revalidatePath("/admin/financeiro");
   revalidatePath("/");
+  revalidatePath("/agendar");
 
   return { success: true };
 }
