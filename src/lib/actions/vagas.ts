@@ -37,24 +37,31 @@ export async function toggleDisponibilidadeAtiva(id: string, ativo: boolean) {
 }
 
 export async function deleteDisponibilidade(id: string) {
-  // Não deixa excluir se já existe algum horário com reserva de verdade (pendente
-  // ou paga) — isso apagaria histórico de agendamentos de clientes. Reservas já
-  // canceladas não contam, porque não têm mais nada de válido a proteger.
+  // O banco de dados protege contra excluir um horário que qualquer reserva ainda
+  // referencia — mesmo reservas já canceladas continuam existindo como histórico,
+  // e apagar o horário embaixo delas quebraria essa referência. Por isso, se
+  // existir qualquer reserva (de qualquer status) ligada a essa disponibilidade,
+  // pedimos pra desativar em vez de excluir.
   const horarioComReserva = await prisma.horario.findFirst({
-    where: {
-      disponibilidadeId: id,
-      reservas: { some: { status: { in: ["pendente", "pago"] } } },
-    },
+    where: { disponibilidadeId: id, reservas: { some: {} } },
   });
 
   if (horarioComReserva) {
     return {
       success: false,
-      error: "Esse horário já tem reservas pendentes ou pagas associadas. Desative em vez de excluir, para não perder o histórico.",
+      error: "Esse horário já tem reservas no histórico (mesmo canceladas). Clique no botão \"Ativo\" ao lado do horário para pausá-lo em vez de excluir — assim o histórico não se perde.",
     };
   }
 
-  await prisma.disponibilidadeSemanal.delete({ where: { id } });
+  try {
+    await prisma.disponibilidadeSemanal.delete({ where: { id } });
+  } catch {
+    return {
+      success: false,
+      error: "Não foi possível excluir — esse horário ainda tem reservas associadas. Desative em vez de excluir.",
+    };
+  }
+
   revalidatePath("/admin/vagas");
   revalidatePath("/");
   revalidatePath("/agendar");

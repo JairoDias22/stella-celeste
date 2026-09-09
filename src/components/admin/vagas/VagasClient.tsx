@@ -11,7 +11,7 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { Plus, Pencil, Trash2, Loader2 } from "lucide-react";
+import { Plus, Pencil, Trash2, Loader2, Pause, Play } from "lucide-react";
 import {
   createDisponibilidade,
   updateDisponibilidade,
@@ -130,7 +130,9 @@ export default function VagasClient({ initialData }: { initialData: Disponibilid
           <h1 className="text-4xl font-bold font-title">Vagas</h1>
           <p className="mt-2 text-zinc-400">
             Configure sua disponibilidade semanal recorrente — o site gera automaticamente
-            os horários das próximas semanas a partir daqui.
+            os horários das próximas semanas a partir daqui. Clique no botão{" "}
+            <span className="text-green-400">Ativo</span> ao lado de um horário para
+            pausá-lo (ele para de gerar novas datas, mas o histórico é mantido).
           </p>
         </div>
 
@@ -161,12 +163,14 @@ export default function VagasClient({ initialData }: { initialData: Disponibilid
                       <span className="font-medium">{disp.time}</span>
                       <button
                         onClick={() => handleToggle(disp)}
-                        className={`rounded-full px-3 py-1 text-xs font-medium transition ${
+                        title={disp.ativo ? "Clique para pausar este horário" : "Clique para reativar este horário"}
+                        className={`flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium transition ${
                           disp.ativo
                             ? "bg-green-500/15 text-green-400 hover:bg-green-500/25"
                             : "bg-zinc-500/15 text-zinc-400 hover:bg-zinc-500/25"
                         }`}
                       >
+                        {disp.ativo ? <Pause className="h-3 w-3" /> : <Play className="h-3 w-3" />}
                         {disp.ativo ? "Ativo" : "Pausado"}
                       </button>
                     </div>
