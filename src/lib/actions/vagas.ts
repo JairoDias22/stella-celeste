@@ -13,10 +13,15 @@ export async function createDisponibilidade(data: {
   weekday: string;
   time: string;
 }) {
-  await prisma.disponibilidadeSemanal.create({ data: { ...data, ativo: true } });
+  try {
+    await prisma.disponibilidadeSemanal.create({ data: { ...data, ativo: true } });
+  } catch {
+    return { success: false, error: "Já existe um horário cadastrado nesse dia e hora." };
+  }
   revalidatePath("/admin/vagas");
   revalidatePath("/");
   revalidatePath("/agendar");
+  return { success: true };
 }
 
 export async function updateDisponibilidade(
@@ -31,6 +36,37 @@ export async function updateDisponibilidade(
 
 export async function toggleDisponibilidadeAtiva(id: string, ativo: boolean) {
   await prisma.disponibilidadeSemanal.update({ where: { id }, data: { ativo } });
+
+  const hoje = new Date();
+  hoje.setUTCHours(0, 0, 0, 0);
+
+  if (!ativo) {
+    // Pausar não pode só impedir gerar horários novos — também precisa esconder
+    // os que já tinham sido gerados antes pra semanas futuras, senão eles
+    // continuam aparecendo como disponíveis pro cliente mesmo pausados.
+    // Horários que já têm reserva não são tocados (eles já estão indisponíveis
+    // por causa da reserva, e alterar isso bagunçaria o histórico).
+    await prisma.horario.updateMany({
+      where: {
+        disponibilidadeId: id,
+        data: { gte: hoje },
+        reservas: { none: {} },
+      },
+      data: { available: false },
+    });
+  } else {
+    // Reativar traz de volta a disponibilidade dos horários futuros que não
+    // tinham reserva nenhuma.
+    await prisma.horario.updateMany({
+      where: {
+        disponibilidadeId: id,
+        data: { gte: hoje },
+        reservas: { none: {} },
+      },
+      data: { available: true },
+    });
+  }
+
   revalidatePath("/admin/vagas");
   revalidatePath("/");
   revalidatePath("/agendar");

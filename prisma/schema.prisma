@@ -26,12 +26,14 @@ model DisponibilidadeSemanal {
   ativo     Boolean   @default(true) // false = não gera mais horários novos
   createdAt DateTime  @default(now())
   horarios  Horario[]
+
+  @@unique([weekday, time])
 }
 
 // Ocorrência real, com data específica, gerada a partir da DisponibilidadeSemanal.
 model Horario {
   id                 String   @id @default(cuid())
-  data               DateTime // data específica desse horário (meia-noite, UTC)
+  data               DateTime @db.Date // só a data (sem hora nem fuso) — evita ambiguidade na comparação
   weekday            String
   time               String
   available          Boolean  @default(true)

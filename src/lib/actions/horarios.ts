@@ -2,7 +2,7 @@
 
 import { prisma } from "@/lib/prisma";
 
-const SEMANAS_A_FRENTE = 8;
+const SEMANAS_A_FRENTE = 4;
 
 const WEEKDAY_INDEX: Record<string, number> = {
   Domingo: 0,

@@ -72,7 +72,11 @@ export default function VagasClient({ initialData }: { initialData: Disponibilid
             prev.map((d) => (d.id === editing.id ? { ...d, ...payload } : d))
           );
         } else {
-          await createDisponibilidade(payload);
+          const result = await createDisponibilidade(payload);
+          if (!result.success) {
+            setError(result.error ?? "Não foi possível salvar.");
+            return;
+          }
           setDisponibilidades((prev) =>
             [...prev, { id: crypto.randomUUID(), ...payload, ativo: true, createdAt: new Date() } as DisponibilidadeSemanal].sort(
               (a, b) =>

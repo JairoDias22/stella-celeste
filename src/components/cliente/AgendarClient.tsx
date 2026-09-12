@@ -24,8 +24,28 @@ type Horario = {
   time: string;
 };
 
+const NOMES_SEMANA = ["Semana atual", "Próxima semana", "Em 2 semanas", "Em 3 semanas"];
+
 function formatarData(data: Date) {
   return new Date(data).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric" });
+}
+
+// Descobre em qual das 4 semanas (0 = atual, 1 = próxima...) uma data cai,
+// usando segunda-feira como início da semana.
+function indiceDaSemana(data: Date) {
+  const hoje = new Date();
+  hoje.setHours(0, 0, 0, 0);
+
+  const diaDaSemanaHoje = hoje.getDay(); // 0 = domingo
+  const diasDesdeSegunda = (diaDaSemanaHoje + 6) % 7;
+  const segundaAtual = new Date(hoje);
+  segundaAtual.setDate(hoje.getDate() - diasDesdeSegunda);
+
+  const alvo = new Date(data);
+  alvo.setHours(0, 0, 0, 0);
+
+  const diffDias = Math.round((alvo.getTime() - segundaAtual.getTime()) / 86400000);
+  return Math.floor(diffDias / 7);
 }
 
 function NumeroPasso({ numero }: { numero: number }) {
@@ -68,6 +88,7 @@ export default function AgendarClient({
     );
   });
 
+  // Agrupa primeiro por data (um card por dia), depois por semana (uma seção por semana)
   const horariosPorData = Array.from(
     horarios
       .slice()
@@ -80,6 +101,14 @@ export default function AgendarClient({
       }, new Map<string, { data: Date; weekday: string; horarios: Horario[] }>())
       .values()
   );
+
+  const diasPorSemana = new Map<number, typeof horariosPorData>();
+  for (const dia of horariosPorData) {
+    const semana = indiceDaSemana(dia.data);
+    if (!diasPorSemana.has(semana)) diasPorSemana.set(semana, []);
+    diasPorSemana.get(semana)!.push(dia);
+  }
+  const semanasOrdenadas = Array.from(diasPorSemana.entries()).sort((a, b) => a[0] - b[0]);
 
   function handleConfirmar() {
     if (!servicoId || !horarioId) return;
@@ -162,7 +191,7 @@ export default function AgendarClient({
               )}
             </div>
 
-            {horariosPorData.length === 0 ? (
+            {semanasOrdenadas.length === 0 ? (
               <p className="text-zinc-500">Nenhum horário disponível no momento.</p>
             ) : (
               <div className="mb-10">
@@ -171,38 +200,48 @@ export default function AgendarClient({
                   <h2 className="text-lg font-semibold text-white">Escolha o horário</h2>
                 </div>
 
-                <p className="mb-5 ml-10 flex items-center gap-2 text-sm text-green-400">
+                <p className="mb-8 ml-10 flex items-center gap-2 text-sm text-green-400">
                   <CheckCircle2 className="h-4 w-4" />
                   Todos os horários abaixo estão disponíveis — é só clicar em um deles
                 </p>
 
-                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                  {horariosPorData.map(({ data, weekday, horarios: horariosDoDia }) => (
-                    <div
-                      key={data.toString()}
-                      className="rounded-2xl border border-white/10 bg-white/5 p-5 transition-colors hover:border-violet-400/30"
-                    >
-                      <div className="mb-3 flex items-center gap-2">
-                        <Calendar className="h-4 w-4 text-violet-400" />
-                        <div>
-                          <p className="font-semibold text-white">{weekday}</p>
-                          <p className="text-xs text-zinc-500">{formatarData(data)}</p>
-                        </div>
-                      </div>
-                      <div className="flex flex-wrap gap-2">
-                        {horariosDoDia.map((h) => (
-                          <button
-                            key={h.id}
-                            onClick={() => setHorarioId(h.id)}
-                            className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium transition-all duration-200 ${
-                              horarioId === h.id
-                                ? "bg-gradient-to-r from-violet-600 to-pink-500 text-white scale-105 shadow-[0_0_15px_-4px_rgba(236,72,153,0.6)]"
-                                : "bg-green-500/10 text-green-400 hover:bg-green-500/20"
-                            }`}
+                <div className="space-y-8">
+                  {semanasOrdenadas.map(([semana, dias]) => (
+                    <div key={semana}>
+                      <h3 className="mb-4 text-sm font-semibold uppercase tracking-wide text-violet-300">
+                        {NOMES_SEMANA[semana] ?? `Daqui a ${semana} semanas`}
+                      </h3>
+
+                      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                        {dias.map(({ data, weekday, horarios: horariosDoDia }) => (
+                          <div
+                            key={data.toString()}
+                            className="rounded-2xl border border-white/10 bg-white/5 p-5 transition-colors hover:border-violet-400/30"
                           >
-                            <CheckCircle2 className="h-3.5 w-3.5" />
-                            {h.time}
-                          </button>
+                            <div className="mb-3 flex items-center gap-2">
+                              <Calendar className="h-4 w-4 text-violet-400" />
+                              <div>
+                                <p className="font-semibold text-white">{weekday}</p>
+                                <p className="text-xs text-zinc-500">{formatarData(data)}</p>
+                              </div>
+                            </div>
+                            <div className="flex flex-wrap gap-2">
+                              {horariosDoDia.map((h) => (
+                                <button
+                                  key={h.id}
+                                  onClick={() => setHorarioId(h.id)}
+                                  className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium transition-all duration-200 ${
+                                    horarioId === h.id
+                                      ? "bg-gradient-to-r from-violet-600 to-pink-500 text-white scale-105 shadow-[0_0_15px_-4px_rgba(236,72,153,0.6)]"
+                                      : "bg-green-500/10 text-green-400 hover:bg-green-500/20"
+                                  }`}
+                                >
+                                  <CheckCircle2 className="h-3.5 w-3.5" />
+                                  {h.time}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
                         ))}
                       </div>
                     </div>
