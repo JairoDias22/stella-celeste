@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import { Loader2 } from "lucide-react";
 import { atualizarStatusReserva } from "@/lib/actions/reservas-admin";
 import CustomSelect from "@/components/ui/CustomSelect";
+import { formatarDataUTC } from "@/lib/utils/data";
 
 type Reserva = {
   id: string;
@@ -90,7 +91,7 @@ export default function ReservasClient({ initialData }: { initialData: Reserva[]
                 </td>
                 <td className="p-5">{r.servico.name}</td>
                 <td className="p-5">
-                  {r.horario.weekday} {new Date(r.horario.data).toLocaleDateString("pt-BR")} {r.horario.time}
+                  {r.horario.weekday} {formatarDataUTC(r.horario.data)} {r.horario.time}
                 </td>
                 <td className="p-5">
                   {Number(r.valor).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}

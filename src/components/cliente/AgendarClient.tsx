@@ -27,24 +27,37 @@ type Horario = {
 const NOMES_SEMANA = ["Semana atual", "Próxima semana", "Em 2 semanas", "Em 3 semanas"];
 
 function formatarData(data: Date) {
-  return new Date(data).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric" });
+  const d = new Date(data);
+  const dia = String(d.getUTCDate()).padStart(2, "0");
+  const mes = String(d.getUTCMonth() + 1).padStart(2, "0");
+  const ano = d.getUTCFullYear();
+  return `${dia}/${mes}/${ano}`;
+}
+
+// Reconstrói uma data em UTC puro (ano/mês/dia) a partir dos componentes UTC —
+// evita que o fuso horário do navegador desloque a data por engano.
+function paraTimestampUTC(data: Date) {
+  const d = new Date(data);
+  return Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate());
 }
 
 // Descobre em qual das 4 semanas (0 = atual, 1 = próxima...) uma data cai,
-// usando segunda-feira como início da semana.
+// usando segunda-feira como início da semana. Todo o cálculo é feito em UTC
+// de propósito, pra não depender do fuso horário configurado no navegador.
 function indiceDaSemana(data: Date) {
-  const hoje = new Date();
-  hoje.setHours(0, 0, 0, 0);
+  const agora = new Date();
+  // "Hoje" é definido pelo calendário local do usuário (é isso que importa pra
+  // ele), mas representado como meia-noite UTC pra comparar de forma consistente
+  // com as datas que vêm do banco.
+  const hojeUTC = Date.UTC(agora.getFullYear(), agora.getMonth(), agora.getDate());
 
-  const diaDaSemanaHoje = hoje.getDay(); // 0 = domingo
+  const diaDaSemanaHoje = new Date(hojeUTC).getUTCDay(); // 0 = domingo
   const diasDesdeSegunda = (diaDaSemanaHoje + 6) % 7;
-  const segundaAtual = new Date(hoje);
-  segundaAtual.setDate(hoje.getDate() - diasDesdeSegunda);
+  const segundaAtualUTC = hojeUTC - diasDesdeSegunda * 86400000;
 
-  const alvo = new Date(data);
-  alvo.setHours(0, 0, 0, 0);
+  const alvoUTC = paraTimestampUTC(data);
 
-  const diffDias = Math.round((alvo.getTime() - segundaAtual.getTime()) / 86400000);
+  const diffDias = Math.round((alvoUTC - segundaAtualUTC) / 86400000);
   return Math.floor(diffDias / 7);
 }
 
@@ -94,11 +107,11 @@ export default function AgendarClient({
       .slice()
       .sort((a, b) => new Date(a.data).getTime() - new Date(b.data).getTime())
       .reduce((mapa, h) => {
-        const chave = new Date(h.data).toDateString();
+        const chave = paraTimestampUTC(h.data);
         if (!mapa.has(chave)) mapa.set(chave, { data: h.data, weekday: h.weekday, horarios: [] as Horario[] });
         mapa.get(chave)!.horarios.push(h);
         return mapa;
-      }, new Map<string, { data: Date; weekday: string; horarios: Horario[] }>())
+      }, new Map<number, { data: Date; weekday: string; horarios: Horario[] }>())
       .values()
   );
 

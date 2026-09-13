@@ -13,6 +13,7 @@ import { clienteLogout } from "@/lib/actions/auth";
 import { cancelarReserva } from "@/lib/actions/agendamento";
 import { enviarAvaliacao } from "@/lib/actions/avaliacoes";
 import { comprimirImagem } from "@/lib/utils/imagem";
+import { formatarDataUTC } from "@/lib/utils/data";
 import SiteLogo from "@/components/layout/SiteLogo";
 
 type Reserva = {
@@ -309,7 +310,7 @@ export default function MinhaContaClient({
                     <div>
                       <p className="font-medium text-white">{item.servico.name}</p>
                       <p className="text-sm text-zinc-500">
-                        {item.horario.weekday}, {new Date(item.horario.data).toLocaleDateString("pt-BR")} às {item.horario.time}
+                        {item.horario.weekday}, {formatarDataUTC(item.horario.data)} às {item.horario.time}
                       </p>
                     </div>
                     <div className="flex items-center gap-3">

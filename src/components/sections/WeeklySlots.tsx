@@ -5,7 +5,18 @@ import { CheckCircle2, XCircle } from "lucide-react";
 import { getHorariosProximos7Dias } from "@/lib/actions/horarios";
 
 function formatarDataCurta(data: Date) {
-  return new Date(data).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" });
+  const d = new Date(data);
+  const dia = String(d.getUTCDate()).padStart(2, "0");
+  const mes = String(d.getUTCMonth() + 1).padStart(2, "0");
+  return `${dia}/${mes}`;
+}
+
+// Extrai um timestamp UTC puro (ano/mês/dia) a partir dos componentes UTC —
+// evita que o fuso horário de onde o código roda (seu computador ou o servidor
+// da Vercel) desloque a data por engano.
+function paraTimestampUTC(data: Date) {
+  const d = new Date(data);
+  return Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate());
 }
 
 export default async function WeeklySlots() {
@@ -13,13 +24,13 @@ export default async function WeeklySlots() {
 
   const porDia = Array.from(
     horarios.reduce((mapa, h) => {
-      const chave = new Date(h.data).toDateString();
+      const chave = paraTimestampUTC(h.data);
       if (!mapa.has(chave)) mapa.set(chave, { data: h.data, weekday: h.weekday, horarios: [] as typeof horarios });
       mapa.get(chave)!.horarios.push(h);
       return mapa;
-    }, new Map<string, { data: Date; weekday: string; horarios: typeof horarios }>())
+    }, new Map<number, { data: Date; weekday: string; horarios: typeof horarios }>())
     .values()
-  ).sort((a, b) => new Date(a.data).getTime() - new Date(b.data).getTime());
+  ).sort((a, b) => paraTimestampUTC(a.data) - paraTimestampUTC(b.data));
 
   return (
     <section id="vagas" className="py-28">
