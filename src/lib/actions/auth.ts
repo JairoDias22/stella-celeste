@@ -42,7 +42,15 @@ export async function clienteRegister(data: {
   email: string;
   phone?: string;
   password: string;
+  honeypot?: string;
 }) {
+  // Campo-armadilha: só um robô preenche isso, já que é invisível pra pessoas.
+  // Se vier preenchido, fingimos sucesso sem criar nada — assim o robô não
+  // percebe que foi bloqueado e não insiste tentando outra abordagem.
+  if (data.honeypot) {
+    return { success: true };
+  }
+
   const existing = await prisma.cliente.findUnique({ where: { email: data.email } });
   if (existing) return { success: false, error: "Já existe uma conta com esse e-mail." };
 

@@ -15,6 +15,7 @@ import AuthGlow from "@/components/layout/AuthGlow";
 export default function CadastroPage() {
   const router = useRouter();
   const [form, setForm] = useState({ name: "", email: "", phone: "", password: "" });
+  const [honeypot, setHoneypot] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -38,6 +39,7 @@ export default function CadastroPage() {
         email: form.email.trim(),
         phone: form.phone.trim() || undefined,
         password: form.password,
+        honeypot,
       });
       if (!result.success) {
         setError(result.error ?? "Não foi possível criar a conta.");
@@ -83,6 +85,20 @@ export default function CadastroPage() {
             {error && (
               <p className="rounded-lg bg-red-500/10 p-3 text-sm text-red-400">{error}</p>
             )}
+
+            {/* Campo-armadilha contra robôs de spam — invisível para pessoas de verdade */}
+            <div className="absolute left-[-9999px] top-auto h-px w-px overflow-hidden" aria-hidden="true">
+              <label htmlFor="empresa">Empresa</label>
+              <input
+                id="empresa"
+                name="empresa"
+                type="text"
+                tabIndex={-1}
+                autoComplete="off"
+                value={honeypot}
+                onChange={(e) => setHoneypot(e.target.value)}
+              />
+            </div>
 
             <div>
               <Label className="text-zinc-300">Nome</Label>
