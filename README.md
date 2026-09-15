@@ -4,6 +4,12 @@ Site de agendamento e atendimento para serviços de cartomancia — com área
 pública para clientes agendarem horários e um painel administrativo completo
 para gerenciar serviços, disponibilidade, reservas, avaliações e financeiro.
 
+## Demo
+
+🔗 [stella-celeste.vercel.app](https://stella-celeste.vercel.app/)
+
+> Projeto em finalização — pagamento online e e-mails automáticos ainda em configuração.
+
 ## Funcionalidades
 
 **Área pública**
