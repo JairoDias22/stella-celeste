@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { Suspense } from "react";
 import { getClienteSession } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import MinhaContaClient from "@/components/cliente/MinhaContaClient";
@@ -35,10 +36,12 @@ export default async function MinhaContaPage() {
   if (!cliente) redirect("/login");
 
   return (
-    <MinhaContaClient
-      cliente={cliente}
-      reservas={cliente.reservas}
-      avaliacao={avaliacao ? { nota: avaliacao.nota, comentario: avaliacao.comentario, status: avaliacao.status } : null}
-    />
+    <Suspense>
+      <MinhaContaClient
+        cliente={cliente}
+        reservas={cliente.reservas}
+        avaliacao={avaliacao ? { nota: avaliacao.nota, comentario: avaliacao.comentario, status: avaliacao.status } : null}
+      />
+    </Suspense>
   );
 }

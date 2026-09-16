@@ -1,7 +1,7 @@
 "use client";
 
-import { useRef, useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useRef, useState, useTransition } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Container from "@/components/layout/Container";
 import { Button } from "@/components/ui/button";
@@ -40,7 +40,20 @@ export default function MinhaContaClient({
   avaliacao: { nota: number; comentario: string; status: string } | null;
 }) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [statusPagamento, setStatusPagamento] = useState<"sucesso" | "pendente" | "falha" | null>(null);
+
+  // Lê o resultado do pagamento quando o cliente volta do Mercado Pago
+  // (?pagamento=sucesso|pendente|falha) e limpa a URL depois, pra não ficar
+  // mostrando a mensagem de novo se a página for recarregada.
+  useEffect(() => {
+    const valor = searchParams.get("pagamento");
+    if (valor === "sucesso" || valor === "pendente" || valor === "falha") {
+      setStatusPagamento(valor);
+      router.replace("/minha-conta");
+    }
+  }, [searchParams, router]);
   const [reservasState, setReservasState] = useState(reservas);
   const [isPending, startTransition] = useTransition();
   const [form, setForm] = useState({
@@ -153,6 +166,22 @@ export default function MinhaContaClient({
         <div className="mb-6">
           <SiteLogo />
         </div>
+
+        {statusPagamento === "sucesso" && (
+          <p className="mb-6 rounded-xl bg-green-500/10 p-4 text-sm text-green-400">
+            Pagamento aprovado! Sua reserva já está confirmada como paga.
+          </p>
+        )}
+        {statusPagamento === "pendente" && (
+          <p className="mb-6 rounded-xl bg-yellow-500/10 p-4 text-sm text-yellow-400">
+            Pagamento em processamento (comum no Pix por boleto ou análise). A confirmação aparece aqui automaticamente em poucos instantes.
+          </p>
+        )}
+        {statusPagamento === "falha" && (
+          <p className="mb-6 rounded-xl bg-red-500/10 p-4 text-sm text-red-400">
+            O pagamento não foi concluído. Você pode tentar novamente pela sua reserva pendente, ou combinar o pagamento por fora.
+          </p>
+        )}
 
         <div className="relative mb-10 overflow-hidden rounded-[28px] border border-white/10 bg-gradient-to-br from-violet-600/15 via-pink-500/10 to-transparent p-8">
           <div className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full bg-pink-500/20 blur-3xl" />

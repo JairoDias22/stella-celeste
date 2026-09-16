@@ -6,6 +6,7 @@ import Container from "@/components/layout/Container";
 import { Button } from "@/components/ui/button";
 import { Loader2, CheckCircle2, Search, Calendar } from "lucide-react";
 import { criarReserva } from "@/lib/actions/agendamento";
+import { criarPagamentoReserva } from "@/lib/actions/pagamento";
 import { formatarMoeda, parsePrecoParaNumero } from "@/lib/utils/money";
 import SiteLogo from "@/components/layout/SiteLogo";
 
@@ -133,6 +134,17 @@ export default function AgendarClient({
         setError(result.error ?? "Não foi possível concluir o agendamento.");
         return;
       }
+
+      // Se o pagamento online (Mercado Pago) já estiver configurado, manda o
+      // cliente direto pra tela de pagamento. Se ainda não estiver (ou der
+      // algum problema), segue o fluxo de sempre: reserva fica pendente e o
+      // pagamento é combinado por fora, como hoje.
+      const pagamento = await criarPagamentoReserva(result.reservaId);
+      if (pagamento.success) {
+        window.location.href = pagamento.initPoint;
+        return;
+      }
+
       router.push("/minha-conta");
       router.refresh();
     });
