@@ -20,7 +20,17 @@ export default function MysticalHeroBackground() {
           alt=""
           onError={() => setTemFoto(false)}
           className="absolute inset-0 h-full w-full object-cover"
-          style={{ objectPosition: "44% 32%" }}
+          style={{
+            objectPosition: "44% 30%",
+            // A foto vai perdendo opacidade nos últimos 40% de altura,
+            // revelando o degradê roxo-escuro por trás em vez de terminar
+            // numa borda dura — assim a transição pra próxima seção fica
+            // suave.
+            maskImage:
+              "linear-gradient(to bottom, black 0%, black 60%, transparent 100%)",
+            WebkitMaskImage:
+              "linear-gradient(to bottom, black 0%, black 60%, transparent 100%)",
+          }}
         />
       ) : (
         <>
@@ -44,8 +54,10 @@ export default function MysticalHeroBackground() {
       <div className="stars opacity-90" />
       <div className="stars-grandes opacity-90" />
 
-      {/* Véu escuro por baixo — suaviza a transição pra próxima seção */}
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#0b0710]" />
+      {/* Faixa extra de esmaecimento, com altura fixa (independe da altura
+          total da seção) — garante que o final do hero sempre termine numa
+          transição suave e previsível, e não numa borda nítida. */}
+      <div className="absolute inset-x-0 bottom-0 h-56 bg-gradient-to-b from-transparent to-[#0b0710] md:h-72" />
     </div>
   );
 }
