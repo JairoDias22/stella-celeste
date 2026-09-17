@@ -130,7 +130,7 @@ export default function AgendarClient({
 
     startTransition(async () => {
       const result = await criarReserva(servicoId, horarioId);
-      if (!result.success) {
+      if (!result.success || !result.reservaId) {
         setError(result.error ?? "Não foi possível concluir o agendamento.");
         return;
       }
@@ -315,8 +315,8 @@ export default function AgendarClient({
                   {!servicoEscolhido && !horarioEscolhido
                     ? "Selecione um serviço e um horário acima para continuar."
                     : !servicoEscolhido
-                      ? "Falta escolher o serviço acima."
-                      : "Falta escolher o horário acima."}
+                    ? "Falta escolher o serviço acima."
+                    : "Falta escolher o horário acima."}
                 </p>
               )}
             </div>
