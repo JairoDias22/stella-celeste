@@ -135,12 +135,10 @@ export default function AgendarClient({
         return;
       }
 
-      // Se o pagamento online (Mercado Pago) já estiver configurado, manda o
-      // cliente direto pra tela de pagamento. Se ainda não estiver (ou der
-      // algum problema), segue o fluxo de sempre: reserva fica pendente e o
-      // pagamento é combinado por fora, como hoje.
       const pagamento = await criarPagamentoReserva(result.reservaId);
-      if (pagamento.success) {
+      
+      // Adicionamos a verificação `&& pagamento.initPoint` aqui
+      if (pagamento.success && pagamento.initPoint) {
         window.location.href = pagamento.initPoint;
         return;
       }
