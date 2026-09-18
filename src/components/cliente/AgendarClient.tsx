@@ -130,15 +130,17 @@ export default function AgendarClient({
 
     startTransition(async () => {
       const result = await criarReserva(servicoId, horarioId);
-      if (!result.success || !result.reservaId) {
+      if (!result.success) {
         setError(result.error ?? "Não foi possível concluir o agendamento.");
         return;
       }
 
+      // Se o pagamento online (Mercado Pago) já estiver configurado, manda o
+      // cliente direto pra tela de pagamento. Se ainda não estiver (ou der
+      // algum problema), segue o fluxo de sempre: reserva fica pendente e o
+      // pagamento é combinado por fora, como hoje.
       const pagamento = await criarPagamentoReserva(result.reservaId);
-      
-      // Adicionamos a verificação `&& pagamento.initPoint` aqui
-      if (pagamento.success && pagamento.initPoint) {
+      if (pagamento.success) {
         window.location.href = pagamento.initPoint;
         return;
       }
@@ -313,8 +315,8 @@ export default function AgendarClient({
                   {!servicoEscolhido && !horarioEscolhido
                     ? "Selecione um serviço e um horário acima para continuar."
                     : !servicoEscolhido
-                    ? "Falta escolher o serviço acima."
-                    : "Falta escolher o horário acima."}
+                      ? "Falta escolher o serviço acima."
+                      : "Falta escolher o horário acima."}
                 </p>
               )}
             </div>

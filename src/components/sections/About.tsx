@@ -1,6 +1,7 @@
 import Container from "../layout/Container";
 import { Sparkles, ShieldCheck, MoonStar } from "lucide-react";
 import AnimatedSection from "../layout/AnimatedSection";
+import MysticalHeading from "../layout/MysticalHeading";
 
 export default function About() {
   return (
@@ -32,30 +33,36 @@ export default function About() {
               Sobre
             </span>
 
-            <h2 className="mt-6 text-4xl font-bold text-white md:text-5xl">
-              Olá, seja muito bem-vindo(a)!
-            </h2>
+            <div className="mt-6">
+              <MysticalHeading text="Olá, seja muito bem-vindo(a)!" />
+            </div>
 
-            <div className="mt-6 space-y-4 text-lg leading-8 text-zinc-400">
-              <p>
-                Muito prazer, me chamo Cleopatra Stella. Sou cartomante e
-                apaixonada por decifrar os caminhos que a espiritualidade nos
-                reserva.
-              </p>
-              <p>
-                Além do meu trabalho com as cartas, levo uma rotina dinâmica:
-                estudo Administração Pública na Universidade Estadual do
-                Maranhão (UEMA) e atuo profissionalmente. Na vida pessoal e
-                nos atendimentos, procuro ser sempre uma pessoa simpática,
-                gentil e alegre, mantendo um ambiente leve e de muita
-                confiança.
-              </p>
-              <p>
-                Estou aqui para te ajudar a compreender melhor seus momentos
-                de dúvida, renovar suas perspectivas e melhorar a sua energia
-                para que você possa caminhar com mais clareza e paz. Será uma
-                honra guiar você nessa jornada!
-              </p>
+            <div className="mt-8 space-y-4 text-lg leading-8 text-zinc-400">
+              <AnimatedSection delay={0.55}>
+                <p>
+                  Muito prazer, me chamo Cleopatra Stella. Sou cartomante e
+                  apaixonada por decifrar os caminhos que a espiritualidade
+                  nos reserva.
+                </p>
+              </AnimatedSection>
+              <AnimatedSection delay={0.7}>
+                <p>
+                  Além do meu trabalho com as cartas, levo uma rotina
+                  dinâmica: estudo Administração Pública na Universidade
+                  Estadual do Maranhão (UEMA) e atuo profissionalmente. Na
+                  vida pessoal e nos atendimentos, procuro ser sempre uma
+                  pessoa simpática, gentil e alegre, mantendo um ambiente
+                  leve e de muita confiança.
+                </p>
+              </AnimatedSection>
+              <AnimatedSection delay={0.85}>
+                <p>
+                  Estou aqui para te ajudar a compreender melhor seus
+                  momentos de dúvida, renovar suas perspectivas e melhorar a
+                  sua energia para que você possa caminhar com mais clareza e
+                  paz. Será uma honra guiar você nessa jornada!
+                </p>
+              </AnimatedSection>
             </div>
 
             <div className="mt-10 space-y-5">

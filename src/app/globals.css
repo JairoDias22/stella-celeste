@@ -222,6 +222,11 @@ body {
   to { opacity: 1; transform: translateY(0); }
 }
 
+@keyframes text-glow {
+  0%, 100% { text-shadow: 0 0 14px rgba(216, 180, 254, 0.25), 0 0 2px rgba(255, 255, 255, 0.15); }
+  50% { text-shadow: 0 0 26px rgba(216, 180, 254, 0.55), 0 0 6px rgba(255, 255, 255, 0.3); }
+}
+
 .animate-float-slow {
   animation: float-slow 7s ease-in-out infinite;
 }
@@ -232,4 +237,8 @@ body {
 
 .animate-pulse-glow {
   animation: pulse-glow 4s ease-in-out infinite;
+}
+
+.animate-text-glow {
+  animation: text-glow 5s ease-in-out infinite;
 }
