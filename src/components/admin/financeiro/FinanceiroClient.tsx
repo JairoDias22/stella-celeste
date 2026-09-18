@@ -15,6 +15,8 @@ type Stats = {
   porMetodo: { pix: number; cartao: number };
   barras: { dia: string; valor: number }[];
   barrasAno: { mes: string; valor: number }[];
+  barrasDia: { hora: string; valor: number }[];
+  barrasMes: { dia: string; valor: number }[];
 };
 
 const moeda = (v: number) =>
@@ -45,8 +47,42 @@ export default function FinanceiroClient() {
     return () => document.removeEventListener("mousedown", handleClickFora);
   }, []);
 
-  const maxBarra = stats ? Math.max(1, ...stats.barras.map((b) => b.valor)) : 1;
   const totalMetodos = stats ? stats.porMetodo.pix + stats.porMetodo.cartao : 0;
+
+  // Cada período tem seu próprio gráfico: horas do dia, dias da semana, dias do
+  // mês, ou meses do ano. Aqui normalizamos pra um formato único { label, valor }
+  // pra desenhar a barra sem precisar duplicar o JSX pra cada período.
+  const barrasAtivas: { label: string; valor: number }[] = !stats
+    ? []
+    : periodo === "dia"
+      ? stats.barrasDia.map((b) => ({ label: b.hora, valor: b.valor }))
+      : periodo === "semana"
+        ? stats.barras.map((b) => ({ label: b.dia, valor: b.valor }))
+        : periodo === "mes"
+          ? stats.barrasMes.map((b) => ({ label: b.dia, valor: b.valor }))
+          : stats.barrasAno.map((b) => ({ label: b.mes, valor: b.valor }));
+
+  const maxBarraAtiva = Math.max(1, ...barrasAtivas.map((b) => b.valor));
+
+  const tituloGrafico =
+    periodo === "dia"
+      ? "Receita por hora (hoje)"
+      : periodo === "semana"
+        ? "Receita dos últimos 7 dias"
+        : periodo === "mes"
+          ? "Receita dia a dia (mês atual)"
+          : "Receita mês a mês (ano atual)";
+
+  // Com 24 horas ou ~30 dias no gráfico, mostrar o rótulo de toda barra fica
+  // apertado — então só mostra 1 a cada N, mantendo a última barra sempre visível.
+  function labelVisivel(i: number) {
+    if (periodo === "dia") return i % 3 === 0;
+    if (periodo === "mes") return i % 5 === 0 || i === barrasAtivas.length - 1;
+    return true;
+  }
+
+  const gapClass = periodo === "dia" || periodo === "mes" ? "gap-1" : periodo === "ano" ? "gap-2" : "gap-4";
+  const labelClass = periodo === "dia" || periodo === "mes" ? "text-[10px]" : periodo === "ano" ? "text-[11px]" : "text-xs";
 
   async function handleExportar(formato: "pdf" | "excel" | "word") {
     setMenuExportAberto(false);
@@ -151,48 +187,26 @@ export default function FinanceiroClient() {
 
           <div className="mt-10 grid gap-6 lg:grid-cols-3">
             <div className="rounded-2xl border border-white/10 bg-white/5 p-8 lg:col-span-2">
-              <h2 className="mb-6 text-2xl font-semibold">
-                {periodo === "ano" ? "Receita mês a mês (ano atual)" : "Receita dos últimos 7 dias"}
-              </h2>
+              <h2 className="mb-6 text-2xl font-semibold">{tituloGrafico}</h2>
 
-              {periodo === "ano" ? (
-                <div className="flex h-64 items-end gap-2">
-                  {stats.barrasAno.map((b, i) => {
-                    const maxBarraAno = Math.max(1, ...stats.barrasAno.map((x) => x.valor));
-                    return (
-                      <div key={i} className="flex flex-1 flex-col items-center gap-2">
-                        <div className="flex h-full w-full items-end">
-                          <div
-                            className="w-full rounded-t-lg bg-gradient-to-t from-violet-600 to-fuchsia-500 transition-all duration-700 ease-out"
-                            style={{ height: `${(b.valor / maxBarraAno) * 100}%`, minHeight: b.valor > 0 ? "4px" : "0" }}
-                            title={moeda(b.valor)}
-                          />
-                        </div>
-                        <span className="text-[11px] text-zinc-500">{b.mes}</span>
-                      </div>
-                    );
-                  })}
-                </div>
-              ) : (
-                <div className="flex h-64 items-end gap-4">
-                  {stats.barras.map((b, i) => (
-                    <div key={i} className="flex flex-1 flex-col items-center gap-2">
-                      <div className="flex h-full w-full items-end">
-                        <div
-                          className="w-full rounded-t-lg bg-gradient-to-t from-violet-600 to-fuchsia-500 transition-all duration-700 ease-out"
-                          style={{ height: `${(b.valor / maxBarra) * 100}%`, minHeight: b.valor > 0 ? "4px" : "0" }}
-                          title={moeda(b.valor)}
-                        />
-                      </div>
-                      <span className="text-xs text-zinc-500">{b.dia}</span>
+              <div className={`flex h-64 items-end ${gapClass}`}>
+                {barrasAtivas.map((b, i) => (
+                  <div key={i} className="flex flex-1 flex-col items-center gap-2">
+                    <div className="flex h-full w-full items-end">
+                      <div
+                        className="w-full rounded-t-lg bg-gradient-to-t from-violet-600 to-fuchsia-500 transition-all duration-700 ease-out"
+                        style={{ height: `${(b.valor / maxBarraAtiva) * 100}%`, minHeight: b.valor > 0 ? "4px" : "0" }}
+                        title={moeda(b.valor)}
+                      />
                     </div>
-                  ))}
-                </div>
-              )}
+                    <span className={`${labelClass} text-zinc-500`}>{labelVisivel(i) ? b.label : ""}</span>
+                  </div>
+                ))}
+              </div>
 
-              {periodo !== "ano" && stats.barras.every((b) => b.valor === 0) && (
+              {barrasAtivas.every((b) => b.valor === 0) && (
                 <p className="mt-4 text-xs text-zinc-600">
-                  Nenhum pagamento registrado nos últimos 7 dias ainda.
+                  Nenhum pagamento registrado neste período ainda.
                 </p>
               )}
             </div>

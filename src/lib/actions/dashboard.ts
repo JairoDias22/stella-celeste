@@ -109,7 +109,45 @@ export async function getFinanceiroStats(periodo: "dia" | "semana" | "mes" | "an
     return { mes, valor: total };
   });
 
-  return { total, atendimentos, ticketMedio, porMetodo, barras, barrasAno };
+  // Receita hora a hora de hoje, pro gráfico diário
+  const inicioHoje = new Date();
+  inicioHoje.setHours(0, 0, 0, 0);
+
+  const reservasHoje = await prisma.reserva.findMany({
+    where: { status: "pago", createdAt: { gte: inicioHoje } },
+    select: { valor: true, createdAt: true },
+  });
+
+  const barrasDia = Array.from({ length: 24 }, (_, hora) => {
+    const total = reservasHoje
+      .filter((r) => new Date(r.createdAt).getHours() === hora)
+      .reduce((acc, r) => acc + Number(r.valor), 0);
+    return { hora: `${String(hora).padStart(2, "0")}h`, valor: total };
+  });
+
+  // Receita dia a dia do mês atual, pro gráfico mensal
+  const inicioMes = new Date();
+  inicioMes.setDate(1);
+  inicioMes.setHours(0, 0, 0, 0);
+
+  const fimMes = new Date(inicioMes);
+  fimMes.setMonth(fimMes.getMonth() + 1);
+
+  const reservasMes = await prisma.reserva.findMany({
+    where: { status: "pago", createdAt: { gte: inicioMes, lt: fimMes } },
+    select: { valor: true, createdAt: true },
+  });
+
+  const diasNoMes = new Date(inicioMes.getFullYear(), inicioMes.getMonth() + 1, 0).getDate();
+  const barrasMes = Array.from({ length: diasNoMes }, (_, i) => {
+    const diaDoMes = i + 1;
+    const total = reservasMes
+      .filter((r) => new Date(r.createdAt).getDate() === diaDoMes)
+      .reduce((acc, r) => acc + Number(r.valor), 0);
+    return { dia: String(diaDoMes), valor: total };
+  });
+
+  return { total, atendimentos, ticketMedio, porMetodo, barras, barrasAno, barrasDia, barrasMes };
 }
 
 export async function getReservasParaExportacao(periodo: "dia" | "semana" | "mes" | "ano") {
