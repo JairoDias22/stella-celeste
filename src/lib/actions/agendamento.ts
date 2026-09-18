@@ -11,7 +11,11 @@ export async function getServicosParaAgendamento() {
   return prisma.servico.findMany({ orderBy: { name: "asc" } });
 }
 
-export async function criarReserva(servicoId: string, horarioId: string) {
+type ResultadoCriarReserva =
+  | { success: true; reservaId: string }
+  | { success: false; error: string };
+
+export async function criarReserva(servicoId: string, horarioId: string): Promise<ResultadoCriarReserva> {
   const session = await getClienteSession();
   if (!session) {
     return { success: false, error: "Você precisa entrar na sua conta para agendar." };
