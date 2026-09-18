@@ -19,9 +19,8 @@ export default function MysticalHeroBackground() {
           src="/hero-cartomante.png"
           alt=""
           onError={() => setTemFoto(false)}
-          className="absolute inset-0 h-full w-full object-cover"
+          className="absolute inset-0 h-full w-full object-cover object-[60%_18%] md:object-[44%_30%]"
           style={{
-            objectPosition: "44% 30%",
             // A foto vai perdendo opacidade nos últimos 40% de altura,
             // revelando o degradê roxo-escuro por trás em vez de terminar
             // numa borda dura — assim a transição pra próxima seção fica
@@ -41,9 +40,12 @@ export default function MysticalHeroBackground() {
         </>
       )}
 
-      {/* Véu escuro à esquerda — garante que o texto continue legível por
-          cima da foto, sem escurecer o lado direito onde ela aparece. */}
-      <div className="absolute inset-0 bg-gradient-to-r from-[#0b0710] via-[#0b0710]/60 to-transparent" />
+      {/* Véu escuro — no celular o texto fica por cima da foto inteira (não
+          lado a lado como no desktop), então aqui é um escurecimento mais
+          parelho pra manter a legibilidade em qualquer altura da tela.
+          A partir do md, volta a ser só a esquerda, deixando a foto nítida
+          do lado direito, onde o card flutua. */}
+      <div className="absolute inset-0 bg-gradient-to-b from-[#0b0710]/90 via-[#0b0710]/70 to-[#0b0710]/45 md:bg-gradient-to-r md:from-[#0b0710] md:via-[#0b0710]/60 md:to-transparent" />
 
       {/* Lua mística */}
       <div className="absolute right-[10%] top-[12%] hidden md:block">

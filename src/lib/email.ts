@@ -1,5 +1,6 @@
 import { Resend } from "resend";
 import { EMAIL_REMETENTE } from "@/lib/config/email";
+import { comTimeout } from "@/lib/utils/timeout";
 
 const apiKey = process.env.RESEND_API_KEY;
 
@@ -27,12 +28,18 @@ export async function enviarEmail({
   }
 
   try {
-    await resend.emails.send({
-      from: EMAIL_REMETENTE,
-      to: para,
-      subject: assunto,
-      html,
-    });
+    // Timeout de 10s: se o Resend travar, a reserva não fica esperando pra
+    // sempre — o e-mail simplesmente falha e o agendamento segue normalmente.
+    await comTimeout(
+      resend.emails.send({
+        from: EMAIL_REMETENTE,
+        to: para,
+        subject: assunto,
+        html,
+      }),
+      10000,
+      "Tempo esgotado ao enviar e-mail"
+    );
     return { success: true };
   } catch (e) {
     console.error("Erro ao enviar e-mail:", e);

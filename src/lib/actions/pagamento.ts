@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { getClienteSession } from "@/lib/auth";
 import { getPreferenceClient, mercadoPagoConfigurado } from "@/lib/mercadopago";
 import { SITE_URL } from "@/lib/config/site";
+import { comTimeout } from "@/lib/utils/timeout";
 
 // Gera o link de pagamento (Checkout Pro) do Mercado Pago pra uma reserva já
 // criada. O cliente é redirecionado pra esse link, escolhe Pix, cartão ou
@@ -14,7 +15,12 @@ import { SITE_URL } from "@/lib/config/site";
 // (MERCADOPAGO_ACCESS_TOKEN vazia), retorna configurado: false — quem chamar
 // essa função deve simplesmente seguir o fluxo antigo (reserva fica
 // "pendente" e o admin marca "pago" manualmente depois).
-export async function criarPagamentoReserva(reservaId: string) {
+type ResultadoPagamento =
+  | { success: false; configurado: false }
+  | { success: false; configurado: true; error: string }
+  | { success: true; configurado: true; initPoint: string };
+
+export async function criarPagamentoReserva(reservaId: string): Promise<ResultadoPagamento> {
   if (!mercadoPagoConfigurado()) {
     return { success: false, configurado: false as const };
   }
@@ -40,28 +46,34 @@ export async function criarPagamentoReserva(reservaId: string) {
   }
 
   try {
-    const preference = await getPreferenceClient().create({
-      body: {
-        items: [
-          {
-            id: reserva.servicoId,
-            title: reserva.servico.name,
-            quantity: 1,
-            unit_price: Number(reserva.valor),
-            currency_id: "BRL",
+    // Timeout de 10s: se o Mercado Pago travar, o cliente recebe um erro em
+    // vez de ficar preso na tela de "carregando" pra sempre.
+    const preference = await comTimeout(
+      getPreferenceClient().create({
+        body: {
+          items: [
+            {
+              id: reserva.servicoId,
+              title: reserva.servico.name,
+              quantity: 1,
+              unit_price: Number(reserva.valor),
+              currency_id: "BRL",
+            },
+          ],
+          payer: { email: session.email },
+          external_reference: reserva.id,
+          notification_url: `${SITE_URL}/api/pagamento/webhook`,
+          back_urls: {
+            success: `${SITE_URL}/minha-conta?pagamento=sucesso`,
+            pending: `${SITE_URL}/minha-conta?pagamento=pendente`,
+            failure: `${SITE_URL}/minha-conta?pagamento=falha`,
           },
-        ],
-        payer: { email: session.email },
-        external_reference: reserva.id,
-        notification_url: `${SITE_URL}/api/pagamento/webhook`,
-        back_urls: {
-          success: `${SITE_URL}/minha-conta?pagamento=sucesso`,
-          pending: `${SITE_URL}/minha-conta?pagamento=pendente`,
-          failure: `${SITE_URL}/minha-conta?pagamento=falha`,
+          auto_return: "approved",
         },
-        auto_return: "approved",
-      },
-    });
+      }),
+      10000,
+      "Tempo esgotado ao gerar link de pagamento"
+    );
 
     const initPoint = preference.init_point ?? preference.sandbox_init_point;
     if (!initPoint) {
