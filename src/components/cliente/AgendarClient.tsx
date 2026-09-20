@@ -129,24 +129,34 @@ export default function AgendarClient({
     setError(null);
 
     startTransition(async () => {
-      const result = await criarReserva(servicoId, horarioId);
-      if (!result.success) {
-        setError(result.error ?? "Não foi possível concluir o agendamento.");
-        return;
-      }
+      try {
+        const result = await criarReserva(servicoId, horarioId);
+        if (!result.success) {
+          setError(result.error ?? "Não foi possível concluir o agendamento.");
+          return;
+        }
 
-      // Se o pagamento online (Mercado Pago) já estiver configurado, manda o
-      // cliente direto pra tela de pagamento. Se ainda não estiver (ou der
-      // algum problema), segue o fluxo de sempre: reserva fica pendente e o
-      // pagamento é combinado por fora, como hoje.
-      const pagamento = await criarPagamentoReserva(result.reservaId);
-      if (pagamento.success) {
-        window.location.href = pagamento.initPoint;
-        return;
-      }
+        // Se o pagamento online (Mercado Pago) já estiver configurado, manda o
+        // cliente direto pra tela de pagamento. Se ainda não estiver (ou der
+        // algum problema), segue o fluxo de sempre: reserva fica pendente e o
+        // pagamento é combinado por fora, como hoje.
+        const pagamento = await criarPagamentoReserva(result.reservaId);
+        if (pagamento.success) {
+          window.location.href = pagamento.initPoint;
+          return;
+        }
 
-      router.push("/minha-conta");
-      router.refresh();
+        router.push("/minha-conta");
+        router.refresh();
+      } catch (e) {
+        // Sem isso, um erro em qualquer etapa (ex: revalidatePath, uma falha
+        // de rede não prevista) deixava o botão girando pra sempre, sem
+        // avisar nada — mesmo com a reserva já salva no banco.
+        console.error("Erro ao confirmar agendamento:", e);
+        setError(
+          "A reserva pode ter sido salva, mas algo deu errado ao concluir o processo. Confira em \"Minha conta\" — se não aparecer lá, tenta de novo."
+        );
+      }
     });
   }
 
