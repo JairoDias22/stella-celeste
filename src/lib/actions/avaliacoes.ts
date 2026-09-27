@@ -3,6 +3,7 @@
 import { prisma } from "@/lib/prisma";
 import { getClienteSession } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
+import { after } from "next/server";
 import { enviarEmail } from "@/lib/email";
 import { templateAvaliacaoAprovada } from "@/lib/email-templates";
 
@@ -70,10 +71,12 @@ export async function atualizarStatusAvaliacao(
   });
 
   if (status === "aprovada") {
-    await enviarEmail({
-      para: avaliacao.cliente.email,
-      assunto: "Sua avaliação foi aprovada!",
-      html: templateAvaliacaoAprovada(),
+    after(async () => {
+      await enviarEmail({
+        para: avaliacao.cliente.email,
+        assunto: "Sua avaliação foi aprovada!",
+        html: templateAvaliacaoAprovada(),
+      });
     });
   }
 

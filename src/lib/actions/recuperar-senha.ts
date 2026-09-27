@@ -3,6 +3,7 @@
 import { prisma } from "@/lib/prisma";
 import { hashPassword } from "@/lib/auth";
 import { randomBytes, createHash } from "crypto";
+import { after } from "next/server";
 import { enviarEmail } from "@/lib/email";
 import { templateRecuperarSenha } from "@/lib/email-templates";
 import { SITE_URL } from "@/lib/config/site";
@@ -26,10 +27,12 @@ export async function solicitarRecuperacaoSenha(email: string, tipo: Tipo) {
         data: { resetTokenHash: tokenHash, resetTokenExpiresAt: expiraEm },
       });
       const link = `${SITE_URL}/redefinir-senha?token=${token}&tipo=cliente`;
-      await enviarEmail({
-        para: cliente.email,
-        assunto: "Redefinir sua senha — Stella Celeste",
-        html: templateRecuperarSenha(link),
+      after(async () => {
+        await enviarEmail({
+          para: cliente.email,
+          assunto: "Redefinir sua senha — Stella Celeste",
+          html: templateRecuperarSenha(link),
+        });
       });
     }
   } else {
@@ -40,10 +43,12 @@ export async function solicitarRecuperacaoSenha(email: string, tipo: Tipo) {
         data: { resetTokenHash: tokenHash, resetTokenExpiresAt: expiraEm },
       });
       const link = `${SITE_URL}/redefinir-senha?token=${token}&tipo=admin`;
-      await enviarEmail({
-        para: admin.email,
-        assunto: "Redefinir sua senha — Stella Admin",
-        html: templateRecuperarSenha(link),
+      after(async () => {
+        await enviarEmail({
+          para: admin.email,
+          assunto: "Redefinir sua senha — Stella Admin",
+          html: templateRecuperarSenha(link),
+        });
       });
     }
   }

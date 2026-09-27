@@ -4,11 +4,15 @@ import { prisma } from "@/lib/prisma";
 import { getClienteSession } from "@/lib/auth";
 import { parsePrecoParaNumero } from "@/lib/utils/money";
 import { revalidatePath } from "next/cache";
+import { after } from "next/server";
 import { enviarEmail } from "@/lib/email";
 import { templateReservaCliente, templateReservaAdmin } from "@/lib/email-templates";
 
 export async function getServicosParaAgendamento() {
-  return prisma.servico.findMany({ orderBy: { name: "asc" } });
+  console.time("[agendar] servico.findMany");
+  const resultado = await prisma.servico.findMany({ orderBy: { name: "asc" } });
+  console.timeEnd("[agendar] servico.findMany");
+  return resultado;
 }
 
 type ResultadoCriarReserva =
@@ -62,20 +66,26 @@ export async function criarReserva(servicoId: string, horarioId: string): Promis
 
   const dataFormatada = new Date(horario.data).toLocaleDateString("pt-BR");
 
-  await Promise.all([
-    enviarEmail({
-      para: session.email,
-      assunto: "Agendamento confirmado — Stella Celeste",
-      html: templateReservaCliente(servico.name, dataFormatada, horario.time),
-    }),
-    process.env.ADMIN_EMAIL
-      ? enviarEmail({
-          para: process.env.ADMIN_EMAIL,
-          assunto: "Novo agendamento recebido",
-          html: templateReservaAdmin(session.name, servico.name, dataFormatada, horario.time),
-        })
-      : Promise.resolve(),
-  ]);
+  // O e-mail de confirmação é só um aviso — não é motivo pra fazer o cliente
+  // esperar. `after()` roda isso depois que a resposta já foi enviada pro
+  // navegador, então a reserva confirma na hora, mesmo se o Resend estiver
+  // lento ou fora do ar.
+  after(async () => {
+    await Promise.all([
+      enviarEmail({
+        para: session.email,
+        assunto: "Agendamento confirmado — Stella Celeste",
+        html: templateReservaCliente(servico.name, dataFormatada, horario.time),
+      }),
+      process.env.ADMIN_EMAIL
+        ? enviarEmail({
+            para: process.env.ADMIN_EMAIL,
+            assunto: "Novo agendamento recebido",
+            html: templateReservaAdmin(session.name, servico.name, dataFormatada, horario.time),
+          })
+        : Promise.resolve(),
+    ]);
+  });
 
   revalidatePath("/minha-conta");
   revalidatePath("/");

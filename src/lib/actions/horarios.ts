@@ -36,11 +36,22 @@ function somarDiasUTC(data: Date, dias: number) {
  * É seguro chamar isso repetidamente — usa upsert, então nunca duplica.
  */
 export async function garantirHorariosGerados() {
+  console.time("[agendar] disponibilidadeSemanal.findMany");
   const disponibilidades = await prisma.disponibilidadeSemanal.findMany({
     where: { ativo: true },
   });
+  console.timeEnd("[agendar] disponibilidadeSemanal.findMany");
+  console.log(`[agendar] ${disponibilidades.length} disponibilidades ativas encontradas`);
 
   const hoje = hojeUTC();
+
+  // Antes, cada horário era criado/atualizado um de cada vez (await dentro do
+  // loop) — com várias disponibilidades × 4 semanas, isso virava dezenas de
+  // idas e vindas sequenciais ao banco a cada carregamento da página, podendo
+  // somar bem mais de 10-15 segundos. Agora todas as operações são disparadas
+  // juntas e esperadas em paralelo — o tempo total passa a ser o da mais
+  // lenta delas, não a soma de todas.
+  const operacoes: Promise<unknown>[] = [];
 
   for (const disp of disponibilidades) {
     const alvo = WEEKDAY_INDEX[disp.weekday];
@@ -57,20 +68,27 @@ export async function garantirHorariosGerados() {
       // dessincronizado da data de verdade.
       const weekdayReal = WEEKDAY_NOMES[data.getUTCDay()];
 
-      await prisma.horario.upsert({
-        where: {
-          disponibilidadeId_data: { disponibilidadeId: disp.id, data },
-        },
-        update: { weekday: weekdayReal, time: disp.time },
-        create: {
-          data,
-          weekday: weekdayReal,
-          time: disp.time,
-          disponibilidadeId: disp.id,
-        },
-      });
+      operacoes.push(
+        prisma.horario.upsert({
+          where: {
+            disponibilidadeId_data: { disponibilidadeId: disp.id, data },
+          },
+          update: { weekday: weekdayReal, time: disp.time },
+          create: {
+            data,
+            weekday: weekdayReal,
+            time: disp.time,
+            disponibilidadeId: disp.id,
+          },
+        })
+      );
     }
   }
+
+  console.log(`[agendar] disparando ${operacoes.length} upserts de horario`);
+  console.time("[agendar] Promise.all upserts");
+  await Promise.all(operacoes);
+  console.timeEnd("[agendar] Promise.all upserts");
 }
 
 // Horários disponíveis dentro dos próximos 7 dias — usado na home ("Vagas desta semana")
@@ -88,12 +106,18 @@ export async function getHorariosProximos7Dias() {
 
 // Todos os horários disponíveis dentro da janela gerada — usado na tela de Agendar
 export async function getHorariosParaAgendamento() {
+  console.time("[agendar] garantirHorariosGerados total");
   await garantirHorariosGerados();
+  console.timeEnd("[agendar] garantirHorariosGerados total");
 
   const hoje = hojeUTC();
 
-  return prisma.horario.findMany({
+  console.time("[agendar] horario.findMany final");
+  const resultado = await prisma.horario.findMany({
     where: { available: true, data: { gte: hoje } },
     orderBy: [{ data: "asc" }, { time: "asc" }],
   });
+  console.timeEnd("[agendar] horario.findMany final");
+
+  return resultado;
 }

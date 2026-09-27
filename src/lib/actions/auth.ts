@@ -9,6 +9,7 @@ import {
   hashPassword,
   verifyPassword,
 } from "@/lib/auth";
+import { after } from "next/server";
 import { enviarEmail } from "@/lib/email";
 import { templateBoasVindas } from "@/lib/email-templates";
 
@@ -72,10 +73,12 @@ export async function clienteRegister(data: {
     role: "cliente",
   });
 
-  await enviarEmail({
-    para: cliente.email,
-    assunto: "Bem-vinda à Stella Celeste!",
-    html: templateBoasVindas(cliente.name),
+  after(async () => {
+    await enviarEmail({
+      para: cliente.email,
+      assunto: "Bem-vinda à Stella Celeste!",
+      html: templateBoasVindas(cliente.name),
+    });
   });
 
   return { success: true };
