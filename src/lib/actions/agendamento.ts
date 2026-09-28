@@ -9,10 +9,7 @@ import { enviarEmail } from "@/lib/email";
 import { templateReservaCliente, templateReservaAdmin } from "@/lib/email-templates";
 
 export async function getServicosParaAgendamento() {
-  console.time("[agendar] servico.findMany");
-  const resultado = await prisma.servico.findMany({ orderBy: { name: "asc" } });
-  console.timeEnd("[agendar] servico.findMany");
-  return resultado;
+  return prisma.servico.findMany({ orderBy: { name: "asc" } });
 }
 
 type ResultadoCriarReserva =
@@ -90,7 +87,6 @@ export async function criarReserva(servicoId: string, horarioId: string): Promis
   revalidatePath("/minha-conta");
   revalidatePath("/");
   revalidatePath("/admin/reservas");
-  revalidatePath("/agendar");
 
   return { success: true, reservaId: reserva.id };
 }
@@ -116,7 +112,6 @@ export async function cancelarReserva(reservaId: string) {
   revalidatePath("/minha-conta");
   revalidatePath("/");
   revalidatePath("/admin/reservas");
-  revalidatePath("/agendar");
 
   return { success: true };
 }

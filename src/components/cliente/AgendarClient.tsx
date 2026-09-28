@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import Container from "@/components/layout/Container";
 import { Button } from "@/components/ui/button";
 import { Loader2, CheckCircle2, Search, Calendar } from "lucide-react";
@@ -77,7 +77,6 @@ export default function AgendarClient({
   servicos: Servico[];
   horarios: Horario[];
 }) {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const [servicoId, setServicoId] = useState<string | null>(() => {
     const servicoDaUrl = searchParams.get("servico");
@@ -146,8 +145,13 @@ export default function AgendarClient({
           return;
         }
 
-        router.push("/minha-conta");
-        router.refresh();
+        // Navegação "completa" (recarrega a página) de propósito: aqui o
+        // servidor já respondeu tudo certo, mas a navegação suave do Next
+        // (router.push) depois de uma Server Action que revalida páginas não
+        // estava trocando a tela — o botão ficava girando e a URL continuava
+        // em /agendar. Recarregar garante que o cliente sempre chegue em
+        // "Minha conta", com a reserva já listada.
+        window.location.assign("/minha-conta");
       } catch (e) {
         // Sem isso, um erro em qualquer etapa (ex: revalidatePath, uma falha
         // de rede não prevista) deixava o botão girando pra sempre, sem

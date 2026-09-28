@@ -36,12 +36,9 @@ function somarDiasUTC(data: Date, dias: number) {
  * É seguro chamar isso repetidamente — usa upsert, então nunca duplica.
  */
 export async function garantirHorariosGerados() {
-  console.time("[agendar] disponibilidadeSemanal.findMany");
   const disponibilidades = await prisma.disponibilidadeSemanal.findMany({
     where: { ativo: true },
   });
-  console.timeEnd("[agendar] disponibilidadeSemanal.findMany");
-  console.log(`[agendar] ${disponibilidades.length} disponibilidades ativas encontradas`);
 
   const hoje = hojeUTC();
 
@@ -84,11 +81,7 @@ export async function garantirHorariosGerados() {
       );
     }
   }
-
-  console.log(`[agendar] disparando ${operacoes.length} upserts de horario`);
-  console.time("[agendar] Promise.all upserts");
   await Promise.all(operacoes);
-  console.timeEnd("[agendar] Promise.all upserts");
 }
 
 // Horários disponíveis dentro dos próximos 7 dias — usado na home ("Vagas desta semana")
@@ -106,18 +99,11 @@ export async function getHorariosProximos7Dias() {
 
 // Todos os horários disponíveis dentro da janela gerada — usado na tela de Agendar
 export async function getHorariosParaAgendamento() {
-  console.time("[agendar] garantirHorariosGerados total");
   await garantirHorariosGerados();
-  console.timeEnd("[agendar] garantirHorariosGerados total");
 
   const hoje = hojeUTC();
-
-  console.time("[agendar] horario.findMany final");
-  const resultado = await prisma.horario.findMany({
+  return prisma.horario.findMany({
     where: { available: true, data: { gte: hoje } },
     orderBy: [{ data: "asc" }, { time: "asc" }],
   });
-  console.timeEnd("[agendar] horario.findMany final");
-
-  return resultado;
 }
