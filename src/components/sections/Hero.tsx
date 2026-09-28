@@ -15,7 +15,7 @@ const DESTAQUES = [
 
 function CardDestaques() {
   return (
-    <div className="rounded-2xl border border-amber-400/20 bg-[#150c22]/80 p-6 shadow-2xl backdrop-blur-md">
+    <div className="rounded-2xl border border-amber-400/20 bg-[#150c22]/80 p-6 shadow-2xl md:backdrop-blur-md">
       <div className="mb-5 flex size-10 items-center justify-center rounded-xl bg-amber-400/15">
         <Sparkles className="size-5 text-amber-300" />
       </div>

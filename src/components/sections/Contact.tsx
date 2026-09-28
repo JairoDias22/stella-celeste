@@ -2,6 +2,7 @@ import Container from "../layout/Container";
 import { Phone, Globe, MessageCircle, Sparkles, Clock, ShieldCheck, Heart } from "lucide-react";
 import AnimatedSection from "../layout/AnimatedSection";
 import { linkWhatsApp, WHATSAPP_NUMERO, INSTAGRAM_URL, INSTAGRAM_HANDLE } from "@/lib/config/contato";
+import Glow from "@/components/layout/Glow";
 
 const destaques = [
   { icon: Clock, texto: "Resposta rápida, direto no seu WhatsApp" },
@@ -12,7 +13,7 @@ const destaques = [
 export default function Contact() {
   return (
     <section id="contato" className="relative overflow-hidden py-28">
-      <div className="pointer-events-none absolute left-1/2 top-1/2 -z-10 h-[500px] w-[700px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-violet-600/10 blur-[160px]" />
+      <Glow rgb="124,58,237" alpha={0.1} className="pointer-events-none absolute left-1/2 top-1/2 -z-10 h-[500px] w-[700px] -translate-x-1/2 -translate-y-1/2" />
 
       <Container>
         <AnimatedSection className="text-center">
@@ -48,7 +49,7 @@ export default function Contact() {
 
           <AnimatedSection delay={0.1} className="lg:col-span-3">
             <div className="rounded-[28px] bg-gradient-to-br from-green-400/30 via-emerald-500/15 to-transparent p-[1.5px] shadow-[0_0_60px_-15px_rgba(34,197,94,0.35)]">
-              <div className="relative overflow-hidden rounded-[26px] border border-white/10 bg-[#0f0a17]/90 p-10 text-center backdrop-blur-xl">
+              <div className="relative overflow-hidden rounded-[26px] border border-white/10 bg-[#0f0a17]/90 p-10 text-center md:backdrop-blur-xl">
                 <Sparkles className="absolute right-6 top-6 h-5 w-5 text-pink-300/60 animate-pulse-glow" />
 
                 <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-green-500/20">

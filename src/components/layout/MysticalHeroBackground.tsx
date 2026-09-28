@@ -1,9 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import Glow from "@/components/layout/Glow";
 
 export default function MysticalHeroBackground() {
-  // Se /public/hero-cartomante.png não existir (ou o link estiver errado), a
+  // Se /public/hero-cartomante.webp não existir (ou o link estiver errado), a
   // foto simplesmente não aparece e cai de volta nas nebulosas roxas — nada
   // quebra.
   const [temFoto, setTemFoto] = useState(true);
@@ -16,7 +17,7 @@ export default function MysticalHeroBackground() {
       {temFoto ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img
-          src="/hero-cartomante.png"
+          src="/hero-cartomante.webp"
           alt=""
           onError={() => setTemFoto(false)}
           className="absolute inset-0 h-full w-full object-cover object-[60%_18%] md:object-[44%_30%]"
@@ -34,9 +35,9 @@ export default function MysticalHeroBackground() {
       ) : (
         <>
           {/* Nebulosas (aparecem só se não houver foto) */}
-          <div className="absolute left-[-10%] top-[-10%] h-[600px] w-[600px] rounded-full bg-violet-600/25 blur-[150px] animate-float-slow" />
-          <div className="absolute right-[-15%] top-[10%] h-[550px] w-[550px] rounded-full bg-pink-500/20 blur-[150px] animate-float-slower" />
-          <div className="absolute left-1/2 top-1/2 h-[500px] w-[500px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-fuchsia-600/10 blur-[160px] animate-pulse-glow" />
+          <Glow rgb="124,58,237" alpha={0.25} className="absolute left-[-10%] top-[-10%] h-[600px] w-[600px] animate-float-slow" />
+          <Glow rgb="236,72,153" alpha={0.2} className="absolute right-[-15%] top-[10%] h-[550px] w-[550px] animate-float-slower" />
+          <Glow rgb="192,38,211" alpha={0.1} className="absolute left-1/2 top-1/2 h-[500px] w-[500px] -translate-x-1/2 -translate-y-1/2 animate-pulse-glow" />
         </>
       )}
 

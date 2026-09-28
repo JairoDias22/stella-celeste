@@ -2,12 +2,13 @@ import Link from "next/link";
 import Container from "../layout/Container";
 import { Globe, Mail, Phone, Sparkles, AtSign, MessageCircle } from "lucide-react";
 import { linkWhatsApp, EMAIL_CONTATO, INSTAGRAM_URL, INSTAGRAM_HANDLE } from "@/lib/config/contato";
+import Glow from "@/components/layout/Glow";
 
 export default function Footer() {
   return (
     <footer className="relative overflow-hidden border-t border-white/10 pt-20 pb-10">
       {/* Glow decorativo */}
-      <div className="absolute left-1/2 top-0 h-[300px] w-[600px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-violet-600/20 blur-[120px]" />
+      <Glow rgb="124,58,237" alpha={0.2} className="absolute left-1/2 top-0 h-[300px] w-[600px] -translate-x-1/2 -translate-y-1/2" />
       <div className="h-[2px] w-full absolute top-0 left-0 bg-gradient-to-r from-transparent via-pink-500 to-transparent" />
 
       <Container>

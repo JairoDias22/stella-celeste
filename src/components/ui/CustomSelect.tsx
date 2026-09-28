@@ -41,7 +41,7 @@ export default function CustomSelect({
       </button>
 
       {aberto && (
-        <div className="absolute left-0 right-0 top-full z-20 mt-2 max-h-64 overflow-y-auto rounded-2xl border border-white/10 bg-zinc-900/95 py-1.5 shadow-xl backdrop-blur-xl">
+        <div className="absolute left-0 right-0 top-full z-20 mt-2 max-h-64 overflow-y-auto rounded-2xl border border-white/10 bg-zinc-900/95 py-1.5 shadow-xl md:backdrop-blur-xl">
           {options.map((opt) => (
             <button
               key={opt.value}

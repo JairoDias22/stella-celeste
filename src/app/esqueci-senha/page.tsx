@@ -48,7 +48,7 @@ export default function EsqueciSenhaPage() {
         </div>
 
         <div className="rounded-[28px] bg-gradient-to-br from-violet-500/30 via-pink-500/20 to-transparent p-[1.5px] shadow-[0_0_50px_-15px_rgba(236,72,153,0.4)]">
-          <div className="rounded-[26px] border border-white/10 bg-[#0f0a17]/90 p-8 backdrop-blur-xl">
+          <div className="rounded-[26px] border border-white/10 bg-[#0f0a17]/90 p-8 md:backdrop-blur-xl">
             {enviado ? (
               <div className="flex flex-col items-center gap-3 text-center">
                 <CheckCircle2 className="h-8 w-8 text-green-400" />

@@ -15,6 +15,7 @@ import { enviarAvaliacao } from "@/lib/actions/avaliacoes";
 import { comprimirImagem } from "@/lib/utils/imagem";
 import { formatarDataUTC } from "@/lib/utils/data";
 import SiteLogo from "@/components/layout/SiteLogo";
+import Glow from "@/components/layout/Glow";
 
 type Reserva = {
   id: string;
@@ -184,7 +185,7 @@ export default function MinhaContaClient({
         )}
 
         <div className="relative mb-10 overflow-hidden rounded-[28px] border border-white/10 bg-gradient-to-br from-violet-600/15 via-pink-500/10 to-transparent p-8">
-          <div className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full bg-pink-500/20 blur-3xl" />
+          <Glow rgb="236,72,153" alpha={0.2} className="pointer-events-none absolute -right-10 -top-10 h-40 w-40" />
           <div className="relative flex flex-wrap items-center justify-between gap-6">
             <div className="flex items-center gap-5">
               <div className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-full border-2 border-pink-400/30 bg-violet-500/20">
@@ -213,7 +214,7 @@ export default function MinhaContaClient({
         <div className="grid gap-8 lg:grid-cols-3">
           <form
             onSubmit={handleSave}
-            className="rounded-3xl border border-pink-400/10 bg-white/5 p-8 shadow-[0_0_40px_-18px_rgba(236,72,153,0.35)] backdrop-blur-xl lg:col-span-1"
+            className="rounded-3xl border border-pink-400/10 bg-white/5 p-8 shadow-[0_0_40px_-18px_rgba(236,72,153,0.35)] md:backdrop-blur-xl lg:col-span-1"
           >
             <div className="mb-6 flex flex-col items-center text-center">
               <div className="relative">
@@ -308,7 +309,7 @@ export default function MinhaContaClient({
             </Button>
           </form>
 
-          <div className="rounded-3xl border border-violet-400/10 bg-white/5 p-8 shadow-[0_0_40px_-18px_rgba(139,92,246,0.3)] backdrop-blur-xl lg:col-span-2">
+          <div className="rounded-3xl border border-violet-400/10 bg-white/5 p-8 shadow-[0_0_40px_-18px_rgba(139,92,246,0.3)] md:backdrop-blur-xl lg:col-span-2">
             <div className="mb-6 flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="rounded-xl bg-violet-500/20 p-2.5 text-pink-300">
@@ -364,7 +365,7 @@ export default function MinhaContaClient({
             )}
           </div>
 
-          <div className="rounded-3xl border border-pink-400/10 bg-white/5 p-8 shadow-[0_0_40px_-18px_rgba(236,72,153,0.3)] backdrop-blur-xl lg:col-span-3">
+          <div className="rounded-3xl border border-pink-400/10 bg-white/5 p-8 shadow-[0_0_40px_-18px_rgba(236,72,153,0.3)] md:backdrop-blur-xl lg:col-span-3">
             <div className="mb-6 flex items-center gap-3">
               <div className="rounded-xl bg-violet-500/20 p-2.5 text-pink-300">
                 <Star className="h-5 w-5" />

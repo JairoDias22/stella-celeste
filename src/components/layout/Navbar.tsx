@@ -69,7 +69,7 @@ export default function Navbar({
   }
 
   return (
-    <header className="fixed top-0 left-0 z-50 w-full border-b border-white/10 bg-black/40 backdrop-blur-xl shadow-[0_4px_30px_-10px_rgba(236,72,153,0.25)]">
+    <header className="fixed top-0 left-0 z-50 w-full border-b border-white/10 bg-black/80 md:bg-black/40 md:backdrop-blur-xl shadow-[0_4px_30px_-10px_rgba(236,72,153,0.25)]">
       <div className="h-[2px] w-full bg-gradient-to-r from-violet-600 via-pink-500 to-violet-600 bg-[length:200%_100%] animate-[pulse-glow_4s_ease-in-out_infinite]" />
 
       <Container>
@@ -115,7 +115,7 @@ export default function Navbar({
             </form>
 
             {sugestoesAbertas && busca.trim().length > 0 && (
-              <div className="absolute left-0 right-0 top-full mt-2 overflow-hidden rounded-2xl border border-white/10 bg-zinc-900/95 shadow-xl backdrop-blur-xl">
+              <div className="absolute left-0 right-0 top-full mt-2 overflow-hidden rounded-2xl border border-white/10 bg-zinc-900/95 shadow-xl md:backdrop-blur-xl">
                 {sugestoes.length === 0 ? (
                   <p className="px-4 py-3 text-sm text-zinc-500">
                     Nenhum serviço encontrado.
@@ -204,7 +204,7 @@ export default function Navbar({
               />
 
               {sugestoesAbertas && busca.trim().length > 0 && (
-                <div className="absolute left-0 right-0 top-full mt-2 overflow-hidden rounded-2xl border border-white/10 bg-zinc-900/95 shadow-xl backdrop-blur-xl">
+                <div className="absolute left-0 right-0 top-full mt-2 overflow-hidden rounded-2xl border border-white/10 bg-zinc-900/95 shadow-xl md:backdrop-blur-xl">
                   {sugestoes.length === 0 ? (
                     <p className="px-4 py-3 text-sm text-zinc-500">
                       Nenhum serviço encontrado.

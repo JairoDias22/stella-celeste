@@ -2,6 +2,7 @@ import Container from "../layout/Container";
 import { Sparkles, ShieldCheck, MoonStar } from "lucide-react";
 import AnimatedSection from "../layout/AnimatedSection";
 import MysticalHeading from "../layout/MysticalHeading";
+import Glow from "@/components/layout/Glow";
 
 export default function About() {
   return (
@@ -11,13 +12,13 @@ export default function About() {
 
           {/* Foto */}
           <AnimatedSection className="relative mx-auto">
-            <div className="absolute inset-0 rounded-3xl bg-violet-600/20 blur-3xl animate-pulse-glow" />
-            <div className="absolute inset-0 rounded-3xl bg-pink-500/10 blur-3xl" />
+            <Glow rgb="124,58,237" alpha={0.2} className="absolute inset-0 animate-pulse-glow" />
+            <Glow rgb="236,72,153" alpha={0.1} className="absolute inset-0" />
 
             <div className="relative h-[440px] w-[350px] overflow-hidden rounded-3xl border border-white/10">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src="/sobre-cartomante.jpg"
+                src="/sobre-cartomante.webp"
                 alt="Cleopatra Stella, cartomante"
                 className="h-full w-full object-cover"
                 style={{ objectPosition: "center 18%" }}

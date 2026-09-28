@@ -1,13 +1,14 @@
 import { Sparkles, MoonStar, Stars } from "lucide-react";
+import Glow from "@/components/layout/Glow";
 
 export default function HeroCard() {
   return (
     <div className="relative animate-float-slow">
       {/* Glow */}
-      <div className="absolute inset-0 rounded-3xl bg-violet-600/20 blur-3xl" />
-      <div className="absolute inset-0 rounded-3xl bg-pink-500/10 blur-3xl" />
+      <Glow rgb="124,58,237" alpha={0.2} className="absolute inset-0" />
+      <Glow rgb="236,72,153" alpha={0.1} className="absolute inset-0" />
 
-      <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-8 backdrop-blur-xl">
+      <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-8 md:backdrop-blur-xl">
 
         <div className="mb-8 flex justify-center">
           <div className="flex h-20 w-20 items-center justify-center rounded-full bg-violet-500/20">

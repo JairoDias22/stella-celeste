@@ -242,3 +242,32 @@ body {
 .animate-text-glow {
   animation: text-glow 5s ease-in-out infinite;
 }
+
+/* Celular (principalmente Safari/iPhone): animações infinitas em camadas grandes
+   e fixas forçam o navegador a redesenhar a tela o tempo todo e pesam na rolagem.
+   Nas telas pequenas os brilhos e estrelas ficam parados. */
+@media (max-width: 767px) {
+  .animate-pulse-glow,
+  .animate-float-slow,
+  .animate-float-slower,
+  .stars,
+  .stars-grandes {
+    animation: none;
+  }
+
+  .animate-text-glow {
+    animation: none;
+    text-shadow: 0 0 18px rgba(216, 180, 254, 0.35);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-pulse-glow,
+  .animate-float-slow,
+  .animate-float-slower,
+  .stars,
+  .stars-grandes,
+  .animate-text-glow {
+    animation: none;
+  }
+}

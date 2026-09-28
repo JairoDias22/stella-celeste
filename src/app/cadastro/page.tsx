@@ -80,7 +80,7 @@ export default function CadastroPage() {
         <div className="rounded-[28px] bg-gradient-to-br from-violet-500/30 via-pink-500/20 to-transparent p-[1.5px] shadow-[0_0_50px_-15px_rgba(236,72,153,0.4)]">
           <form
             onSubmit={handleSubmit}
-            className="space-y-4 rounded-[26px] border border-white/10 bg-[#0f0a17]/90 p-8 backdrop-blur-xl"
+            className="space-y-4 rounded-[26px] border border-white/10 bg-[#0f0a17]/90 p-8 md:backdrop-blur-xl"
           >
             {error && (
               <p className="rounded-lg bg-red-500/10 p-3 text-sm text-red-400">{error}</p>
