@@ -11,6 +11,7 @@ import { UserRound, Calendar, LogOut, Loader2, Plus, Camera, Star } from "lucide
 import { updateMeuPerfil } from "@/lib/actions/minha-conta";
 import { clienteLogout } from "@/lib/actions/auth";
 import { cancelarReserva } from "@/lib/actions/agendamento";
+import { criarPagamentoReserva } from "@/lib/actions/pagamento";
 import { enviarAvaliacao } from "@/lib/actions/avaliacoes";
 import { comprimirImagem } from "@/lib/utils/imagem";
 import { formatarDataUTC } from "@/lib/utils/data";
@@ -56,6 +57,8 @@ export default function MinhaContaClient({
     }
   }, [searchParams, router]);
   const [reservasState, setReservasState] = useState(reservas);
+  const [pagandoId, setPagandoId] = useState<string | null>(null);
+  const [erroPagamento, setErroPagamento] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
   const [form, setForm] = useState({
     name: cliente.name,
@@ -159,6 +162,31 @@ export default function MinhaContaClient({
         );
       }
     });
+  }
+
+  // Gera de novo o link de pagamento de uma reserva que ficou pendente (por
+  // exemplo, o cliente fechou a página do Mercado Pago ou o pagamento foi
+  // recusado) e leva o cliente pra lá, sem precisar cancelar e agendar tudo
+  // de novo.
+  async function handlePagar(id: string) {
+    setErroPagamento(null);
+    setPagandoId(id);
+    try {
+      const result = await criarPagamentoReserva(id);
+      if (result.success) {
+        window.location.href = result.initPoint;
+        return; // mantém o botão em "carregando" enquanto a página troca
+      }
+      setErroPagamento(
+        result.configurado
+          ? result.error
+          : "O pagamento online não está disponível no momento. Combine o pagamento diretamente com a Stella."
+      );
+    } catch (e) {
+      console.error("Erro ao gerar pagamento da reserva:", e);
+      setErroPagamento("Não foi possível abrir o pagamento agora. Tente de novo em instantes.");
+    }
+    setPagandoId(null);
   }
 
   return (
@@ -326,6 +354,10 @@ export default function MinhaContaClient({
               </Link>
             </div>
 
+            {erroPagamento && (
+              <p className="mb-4 rounded-xl bg-red-500/10 p-3 text-sm text-red-400">{erroPagamento}</p>
+            )}
+
             {reservasState.length === 0 ? (
               <p className="text-sm text-zinc-500">
                 Você ainda não tem atendimentos. Clique em &quot;Agendar&quot; para marcar o primeiro.
@@ -335,7 +367,7 @@ export default function MinhaContaClient({
                 {reservasState.map((item) => (
                   <div
                     key={item.id}
-                    className="flex items-center justify-between rounded-xl border border-white/10 bg-black/20 px-5 py-4"
+                    className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-white/10 bg-black/20 px-5 py-4"
                   >
                     <div>
                       <p className="font-medium text-white">{item.servico.name}</p>
@@ -351,8 +383,18 @@ export default function MinhaContaClient({
                       </span>
                       {item.status === "pendente" && (
                         <button
+                          onClick={() => handlePagar(item.id)}
+                          disabled={isPending || pagandoId !== null}
+                          className="inline-flex items-center gap-1.5 rounded-full bg-violet-600 px-3 py-1 text-xs font-medium text-white transition-colors hover:bg-violet-700 disabled:opacity-60"
+                        >
+                          {pagandoId === item.id && <Loader2 className="h-3 w-3 animate-spin" />}
+                          Pagar agora
+                        </button>
+                      )}
+                      {item.status === "pendente" && (
+                        <button
                           onClick={() => handleCancelar(item.id)}
-                          disabled={isPending}
+                          disabled={isPending || pagandoId !== null}
                           className="text-xs text-red-400 hover:text-red-300"
                         >
                           Cancelar
