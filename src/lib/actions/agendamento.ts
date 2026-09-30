@@ -6,7 +6,7 @@ import { parsePrecoParaNumero } from "@/lib/utils/money";
 import { revalidatePath } from "next/cache";
 import { after } from "next/server";
 import { enviarEmail } from "@/lib/email";
-import { templateReservaCliente, templateReservaAdmin } from "@/lib/email-templates";
+import { templateReservaAguardandoPagamento, templateReservaAdmin } from "@/lib/email-templates";
 
 export async function getServicosParaAgendamento() {
   return prisma.servico.findMany({ orderBy: { name: "asc" } });
@@ -63,7 +63,9 @@ export async function criarReserva(servicoId: string, horarioId: string): Promis
 
   const dataFormatada = new Date(horario.data).toLocaleDateString("pt-BR");
 
-  // O e-mail de confirmação é só um aviso — não é motivo pra fazer o cliente
+  // Este e-mail NÃO confirma o agendamento (o pagamento ainda não foi feito);
+  // a confirmação só sai quando a reserva vira "pago" (ver reserva-emails.ts).
+  // É só um aviso — não é motivo pra fazer o cliente
   // esperar. `after()` roda isso depois que a resposta já foi enviada pro
   // navegador, então a reserva confirma na hora, mesmo se o Gmail estiver
   // lento ou fora do ar.
@@ -71,13 +73,13 @@ export async function criarReserva(servicoId: string, horarioId: string): Promis
     await Promise.all([
       enviarEmail({
         para: session.email,
-        assunto: "Agendamento confirmado — Stella Celeste",
-        html: templateReservaCliente(servico.name, dataFormatada, horario.time),
+        assunto: "Reserva recebida — falta o pagamento | Stella Celeste",
+        html: templateReservaAguardandoPagamento(servico.name, dataFormatada, horario.time),
       }),
       process.env.ADMIN_EMAIL
         ? enviarEmail({
             para: process.env.ADMIN_EMAIL,
-            assunto: "Novo agendamento recebido",
+            assunto: "Nova reserva aguardando pagamento",
             html: templateReservaAdmin(session.name, servico.name, dataFormatada, horario.time),
           })
         : Promise.resolve(),

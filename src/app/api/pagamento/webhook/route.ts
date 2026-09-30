@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getPaymentClient, mercadoPagoConfigurado } from "@/lib/mercadopago";
 import { revalidatePath } from "next/cache";
+import { after } from "next/server";
+import { enviarEmailsReservaPaga } from "@/lib/reserva-emails";
 
 // O Mercado Pago chama essa rota automaticamente sempre que o status de um
 // pagamento muda (aprovado, pendente, etc). Em vez de confiar direto no que
@@ -44,10 +46,17 @@ export async function POST(request: NextRequest) {
 
     if (payment.status === "approved") {
       const metodo = payment.payment_method_id === "pix" ? "pix" : "cartao";
-      await prisma.reserva.update({
-        where: { id: reservaId },
+      // updateMany com "status: pendente" na condição garante que, mesmo que o
+      // Mercado Pago avise duas vezes ao mesmo tempo, só uma chamada marca a
+      // reserva como paga — e só ela dispara o e-mail de confirmação.
+      const { count } = await prisma.reserva.updateMany({
+        where: { id: reservaId, status: "pendente" },
         data: { status: "pago", metodoPagamento: metodo },
       });
+
+      if (count === 1) {
+        after(() => enviarEmailsReservaPaga(reservaId));
+      }
 
       revalidatePath("/minha-conta");
       revalidatePath("/admin/reservas");

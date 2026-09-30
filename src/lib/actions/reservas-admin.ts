@@ -2,6 +2,8 @@
 
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
+import { after } from "next/server";
+import { enviarEmailsReservaPaga } from "@/lib/reserva-emails";
 
 export async function getReservasAdmin() {
   const reservas = await prisma.reserva.findMany({
@@ -31,6 +33,11 @@ export async function atualizarStatusReserva(
       metodoPagamento: status === "pago" ? metodoPagamento ?? null : null,
     },
   });
+
+  // Marcou como pago à mão (ex.: cliente pagou por fora): manda a confirmação.
+  if (status === "pago" && reserva.status !== "pago") {
+    after(() => enviarEmailsReservaPaga(id));
+  }
 
   // Se foi cancelada, devolve o horário pra disponível
   if (status === "cancelado" && reserva.status !== "cancelado") {

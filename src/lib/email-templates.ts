@@ -7,6 +7,8 @@
  * então basta substituir o arquivo — nenhuma chamada precisa mudar.
  */
 
+import { SITE_URL } from "@/lib/config/site";
+
 // ---------- Peças reutilizáveis ----------
 
 function moonIcon() {
@@ -206,43 +208,79 @@ export function templateRecuperarSenha(link: string) {
   );
 }
 
-export function templateReservaCliente(servico: string, dataFormatada: string, horario: string) {
+// Enviado quando a reserva é CRIADA e ainda não foi paga. Não é uma confirmação:
+// deixa claro que o agendamento só vale depois do pagamento aprovado.
+export function templateReservaAguardandoPagamento(servico: string, dataFormatada: string, horario: string) {
   const conteudo = `
-    <p style="text-align:center;">Os astros já reservaram esse momento para você. Aqui estão os detalhes da sua consulta:</p>
+    <p style="text-align:center;">Recebemos o seu pedido de agendamento e o horário abaixo está <span style="color:#e9c17a;">reservado para você</span>.</p>
+    <p style="text-align:center;"><strong style="color:#fbe9ff;">Atenção:</strong> o agendamento só é confirmado depois que o pagamento for aprovado. Assim que isso acontecer, você recebe um novo e-mail de confirmação.</p>
+    <div style="text-align:center; margin: 24px 0 8px;">${ctaButton('Ver minha reserva', `${SITE_URL}/minha-conta`)}</div>
   `;
   const detalhes = detailCard([
     { label: 'Serviço', valor: servico },
     { label: 'Data', valor: `${dataFormatada} às ${horario}` },
+    { label: 'Situação', valor: 'Aguardando pagamento' },
   ]);
-  const notaPagamento = `
-    <tr>
-      <td class="fluid-padding" style="padding: 0 48px 30px 48px; text-align:center;">
-        <p style="margin:0; font-style:italic; color:#a892b8; font-size:14px; font-family: 'Trebuchet MS', Verdana, sans-serif;">
-          O pagamento é combinado diretamente com a Stella Celeste.
-        </p>
-      </td>
-    </tr>
-  `;
   return base(
-    'Seu agendamento foi confirmado ✨',
+    'Reserva recebida — falta o pagamento ✨',
     conteudo,
-    'Você recebeu este email porque agendou uma consulta em nosso site.',
+    'Você recebeu este email porque iniciou um agendamento em nosso site.',
+    'Falta só um passo para o universo confirmar o seu momento.',
+    detalhes
+  );
+}
+
+// Enviado SOMENTE quando o pagamento foi aprovado (pelo Mercado Pago ou
+// marcado como pago pela Stella no painel).
+export function templateReservaCliente(servico: string, dataFormatada: string, horario: string) {
+  const conteudo = `
+    <p style="text-align:center;">Recebemos o seu pagamento e o seu agendamento está <span style="color:#e9c17a;">confirmado</span>. Os astros já reservaram esse momento para você. Aqui estão os detalhes da sua consulta:</p>
+  `;
+  const detalhes = detailCard([
+    { label: 'Serviço', valor: servico },
+    { label: 'Data', valor: `${dataFormatada} às ${horario}` },
+    { label: 'Situação', valor: 'Pago e confirmado' },
+  ]);
+  return base(
+    'Pagamento confirmado — seu agendamento está garantido ✨',
+    conteudo,
+    'Você recebeu este email porque o pagamento do seu agendamento foi confirmado.',
     'O universo já preparou o caminho. Basta você chegar.',
-    detalhes + notaPagamento
+    detalhes
   );
 }
 
 export function templateReservaAdmin(cliente: string, servico: string, dataFormatada: string, horario: string) {
   const conteudo = `
-    <p style="text-align:center;">Um novo agendamento acaba de chegar.</p>
+    <p style="text-align:center;">Uma nova reserva foi feita e está <strong style="color:#fbe9ff;">aguardando o pagamento</strong>. Você recebe outro aviso quando ele for confirmado — só considere o atendimento garantido depois disso.</p>
   `;
   const detalhes = detailCard([
     { label: 'Cliente', valor: cliente },
     { label: 'Serviço', valor: servico },
     { label: 'Data', valor: `${dataFormatada} às ${horario}` },
+    { label: 'Situação', valor: 'Aguardando pagamento' },
   ]);
   return base(
-    'Novo agendamento recebido 🔔',
+    'Nova reserva aguardando pagamento 🔔',
+    conteudo,
+    'Notificação automática do sistema de agendamentos.',
+    'Mais uma alma encontra seu caminho até você.',
+    detalhes
+  );
+}
+
+export function templatePagamentoConfirmadoAdmin(cliente: string, servico: string, dataFormatada: string, horario: string) {
+  const conteudo = `
+    <p style="text-align:center;">O pagamento desta reserva foi <strong style="color:#e9c17a;">confirmado</strong>. O atendimento está garantido.</p>
+  `;
+  const detalhes = detailCard([
+    { label: 'Cliente', valor: cliente },
+    { label: 'Serviço', valor: servico },
+    { label: 'Data', valor: `${dataFormatada} às ${horario}` },
+    { label: 'Situação', valor: 'Pago' },
+  ]);
+  return base(
+    'Pagamento confirmado 💫',
     conteudo,
     'Notificação automática do sistema de agendamentos.',
     'Mais uma alma encontra seu caminho até você.',
