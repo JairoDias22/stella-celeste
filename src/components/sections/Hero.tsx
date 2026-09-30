@@ -38,7 +38,7 @@ export default function Hero() {
   return (
     <section
       id="inicio"
-      className="relative flex min-h-screen items-center overflow-hidden pt-20"
+      className="relative flex min-h-screen items-center overflow-hidden pb-16 pt-32 md:pb-0 md:pt-20"
     >
       <MysticalHeroBackground />
 
