@@ -54,7 +54,7 @@ export default function ServicosGrid({ servicos }: { servicos: Servico[] }) {
               <AnimatedSection
                 key={servico.id}
                 delay={i * 0.08}
-                className="rounded-3xl border border-white/10 bg-white/5 p-8 md:backdrop-blur-xl transition-all duration-300 hover:-translate-y-2 hover:border-pink-400/40 hover:shadow-[0_0_40px_-10px_rgba(236,72,153,0.35)]"
+                className="rounded-3xl border border-white/10 bg-white/5 p-8 transition-all duration-300 hover:-translate-y-2 hover:border-pink-400/40 hover:shadow-[0_0_40px_-10px_rgba(236,72,153,0.35)]"
               >
                 <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-full bg-violet-500/20">
                   <Icon className="h-7 w-7 text-pink-300" />

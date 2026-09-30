@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Sparkles } from "lucide-react";
+import Glow from "@/components/layout/Glow";
 
 // Título com cada letra surgindo aos poucos, com um leve brilho — usado nas
 // seções que merecem um destaque mais "mágico" que um título comum.
@@ -16,9 +17,17 @@ export default function MysticalHeading({
   let indiceGlobal = 0;
 
   return (
-    <div>
+    <div className="relative">
+      {/* Brilho que "respira" atrás do título. Antes cada letra animava o próprio
+          text-shadow o tempo todo (dezenas de repinturas por quadro, o que travava
+          a seção Sobre); agora é uma camada só, animando apenas a opacidade. */}
+      <Glow
+        rgb="216,180,254"
+        alpha={0.18}
+        className="pointer-events-none absolute -inset-x-10 -inset-y-6 animate-pulse-glow"
+      />
       <motion.h2
-        className={`font-title text-4xl font-bold tracking-wide text-transparent md:text-5xl ${className}`}
+        className={`relative font-title text-4xl font-bold tracking-wide text-transparent md:text-5xl ${className}`}
       >
         <motion.span
           initial={{ opacity: 0, scale: 0.4, rotate: -25 }}
@@ -39,11 +48,11 @@ export default function MysticalHeading({
               return (
                 <motion.span
                   key={j}
-                  initial={{ opacity: 0, y: 16, filter: "blur(8px)" }}
-                  whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                  initial={{ opacity: 0, y: 16 }}
+                  whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, amount: 0.5 }}
                   transition={{ duration: 0.55, delay, ease: "easeOut" }}
-                  className="inline-block animate-text-glow bg-gradient-to-br from-violet-100 via-pink-200 to-violet-300 bg-clip-text"
+                  className="inline-block bg-gradient-to-br from-violet-100 via-pink-200 to-violet-300 bg-clip-text [text-shadow:0_0_18px_rgba(216,180,254,0.35)]"
                 >
                   {letra}
                 </motion.span>

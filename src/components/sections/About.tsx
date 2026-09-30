@@ -20,6 +20,8 @@ export default function About() {
               <img
                 src="/sobre-cartomante.webp"
                 alt="Cleopatra Stella, cartomante"
+                loading="lazy"
+                decoding="async"
                 className="h-full w-full object-cover"
                 style={{ objectPosition: "center 18%" }}
               />
