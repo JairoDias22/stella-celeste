@@ -65,7 +65,7 @@ export async function criarReserva(servicoId: string, horarioId: string): Promis
 
   // O e-mail de confirmação é só um aviso — não é motivo pra fazer o cliente
   // esperar. `after()` roda isso depois que a resposta já foi enviada pro
-  // navegador, então a reserva confirma na hora, mesmo se o Resend estiver
+  // navegador, então a reserva confirma na hora, mesmo se o Gmail estiver
   // lento ou fora do ar.
   after(async () => {
     await Promise.all([

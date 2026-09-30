@@ -1,4 +1,4 @@
-// Alguns serviços externos (Resend, Mercado Pago) não têm timeout próprio —
+// Alguns serviços externos (Gmail/SMTP, Mercado Pago) não têm timeout próprio —
 // se a rede travar (Wi-Fi instável, firewall, instabilidade do provedor), o
 // `await` fica esperando pra sempre e a tela de "carregando" nunca termina.
 // Essa função garante um limite máximo de espera: se o serviço não responder

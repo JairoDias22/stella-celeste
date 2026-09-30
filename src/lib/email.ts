@@ -1,15 +1,30 @@
-import { Resend } from "resend";
+import nodemailer from "nodemailer";
 import { EMAIL_REMETENTE } from "@/lib/config/email";
 import { comTimeout } from "@/lib/utils/timeout";
 
-const apiKey = process.env.RESEND_API_KEY;
+const gmailUser = process.env.GMAIL_USER;
+const gmailAppPassword = process.env.GMAIL_APP_PASSWORD;
 
-const resend = apiKey ? new Resend(apiKey) : null;
+// Envio pelo SMTP do Gmail. Precisa de uma "senha de app" (não é a senha normal
+// da conta) — veja o README. Sem as duas variáveis, o e-mail fica desligado.
+const transporter =
+  gmailUser && gmailAppPassword
+    ? nodemailer.createTransport({
+        host: "smtp.gmail.com",
+        port: 465,
+        secure: true,
+        auth: { user: gmailUser, pass: gmailAppPassword },
+        connectionTimeout: 8000,
+        greetingTimeout: 8000,
+        socketTimeout: 10000,
+      })
+    : null;
 
 /**
- * Envia um e-mail. Se o RESEND_API_KEY não estiver configurado, não envia nada
- * e apenas avisa no log do servidor — não quebra o fluxo do site (cadastro,
- * agendamento etc. continuam funcionando normalmente mesmo sem e-mail configurado).
+ * Envia um e-mail. Se GMAIL_USER / GMAIL_APP_PASSWORD não estiverem
+ * configuradas, não envia nada e apenas avisa no log do servidor — não quebra
+ * o fluxo do site (cadastro, agendamento etc. continuam funcionando
+ * normalmente mesmo sem e-mail configurado).
  */
 export async function enviarEmail({
   para,
@@ -20,18 +35,18 @@ export async function enviarEmail({
   assunto: string;
   html: string;
 }) {
-  if (!resend) {
+  if (!transporter) {
     console.warn(
-      `RESEND_API_KEY não configurada — e-mail "${assunto}" para ${para} não foi enviado.`
+      `GMAIL_USER/GMAIL_APP_PASSWORD não configuradas — e-mail "${assunto}" para ${para} não foi enviado.`
     );
     return { success: false, error: "E-mail não configurado." };
   }
 
   try {
-    // Timeout de 10s: se o Resend travar, a reserva não fica esperando pra
+    // Timeout de 10s: se o Gmail travar, a reserva não fica esperando pra
     // sempre — o e-mail simplesmente falha e o agendamento segue normalmente.
     await comTimeout(
-      resend.emails.send({
+      transporter.sendMail({
         from: EMAIL_REMETENTE,
         to: para,
         subject: assunto,

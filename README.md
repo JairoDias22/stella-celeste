@@ -36,7 +36,7 @@ para gerenciar serviços, disponibilidade, reservas, avaliações e financeiro.
 - [Next.js 16](https://nextjs.org/) (App Router) + TypeScript
 - [Tailwind CSS v4](https://tailwindcss.com/)
 - [Prisma 7](https://www.prisma.io/) + [Postgres/Neon](https://neon.tech/)
-- [Resend](https://resend.com/) para e-mails transacionais
+- [Nodemailer](https://nodemailer.com/) + Gmail (SMTP) para e-mails transacionais
 - [Mercado Pago](https://www.mercadopago.com.br/developers) para pagamento
   online (Pix / cartão / boleto)
 - Deploy na [Vercel](https://vercel.com/)
@@ -64,7 +64,8 @@ Preencha o `.env.local`:
 |---|---|---|
 | `DATABASE_URL` | Sim | Connection string do Postgres (Neon) |
 | `SESSION_SECRET` | Sim | String aleatória longa, usada para assinar a sessão de login |
-| `RESEND_API_KEY` | Sim | Chave da API do Resend, para envio de e-mails |
+| `GMAIL_USER` | Sim | Endereço do Gmail usado pelo site para enviar e-mails |
+| `GMAIL_APP_PASSWORD` | Sim | Senha de app de 16 caracteres do Gmail (não é a senha normal) |
 | `ADMIN_EMAIL` | Não | E-mail que recebe notificação de novos agendamentos |
 | `NEXT_PUBLIC_APP_URL` | Não* | URL pública do site (usada em links de e-mail e no retorno do pagamento) |
 | `MERCADOPAGO_ACCESS_TOKEN` | Não* | Access Token do Mercado Pago — sem ela, o pagamento online fica desligado e o admin marca "pago" manualmente |
@@ -97,8 +98,8 @@ O projeto está preparado para deploy na Vercel:
 ### Pendências conhecidas
 - **Pagamento**: o código do Mercado Pago já está pronto (Checkout Pro); falta
   configurar as credenciais reais (teste e depois produção)
-- **Domínio próprio**: o Resend está em modo sandbox — e-mails automáticos só
-  chegam para o endereço cadastrado no Resend até haver um domínio próprio
-  configurado
+- **E-mail**: enviado por uma conta Gmail dedicada ao site (limite de algumas
+  centenas de envios por dia). Para volume maior ou remetente com domínio
+  próprio, migrar para um serviço como o Resend com domínio verificado
 - **Testes de ponta a ponta**: revisar todos os fluxos (cliente e admin) após
   as últimas mudanças estruturais
