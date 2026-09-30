@@ -71,7 +71,7 @@ export default async function WeeklySlots() {
                 <AnimatedSection
                   key={data.toString()}
                   delay={i * 0.08}
-                  className="rounded-3xl border border-white/10 bg-white/5 p-8 transition-all duration-300 hover:border-violet-400/40"
+                  className="rounded-3xl border border-white/10 bg-white/5 p-8 transition-colors duration-300 hover:border-violet-400/40"
                 >
                   <div className="mb-6 flex items-center justify-between">
                     <div>

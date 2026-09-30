@@ -3,6 +3,11 @@
 import { motion } from "framer-motion";
 import type { ReactNode } from "react";
 
+// ATENÇÃO: o framer-motion anima `opacity` e `transform` deste elemento. Quem usa
+// AnimatedSection com `className` NÃO pode usar `transition-all` (nem transition
+// em opacity/transform): o CSS passa a "suavizar" cada quadro do framer e, no fim
+// da animação, o elemento dá uma piscada. Use `transition-colors` ou liste só o
+// que o framer não mexe (ex.: `transition-[translate,border-color]`).
 export default function AnimatedSection({
   children,
   className,

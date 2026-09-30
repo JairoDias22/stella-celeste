@@ -34,7 +34,7 @@ export default async function Testimonials() {
               <AnimatedSection
                 key={item.id}
                 delay={i * 0.1}
-                className="rounded-3xl border border-white/10 bg-white/5 p-8 transition-all duration-300 hover:-translate-y-1 hover:border-pink-400/30"
+                className="rounded-3xl border border-white/10 bg-white/5 p-8 transition-[translate,border-color] duration-300 hover:-translate-y-1 hover:border-pink-400/30"
               >
                 <div className="mb-4 flex gap-1">
                   {Array.from({ length: 5 }).map((_, idx) => (
