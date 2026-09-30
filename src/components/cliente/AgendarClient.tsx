@@ -306,9 +306,10 @@ export default function AgendarClient({
                     </p>
                   </div>
                   <p className="mt-2 text-sm text-zinc-400">
-                    Valor: {formatarMoeda(parsePrecoParaNumero(servicoEscolhido.price))} — pagamento
-                    combinado diretamente com a Stella Celeste (por enquanto, o pagamento online
-                    ainda não está disponível).
+                    Valor: {formatarMoeda(parsePrecoParaNumero(servicoEscolhido.price))} — ao
+                    confirmar, você será levado à página de pagamento do Mercado Pago. O agendamento
+                    só é confirmado depois que o pagamento for aprovado, e o e-mail de confirmação
+                    chega em seguida (se não aparecer na caixa de entrada, confira o spam).
                   </p>
 
                   {error && (

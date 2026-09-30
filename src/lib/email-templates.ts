@@ -215,6 +215,7 @@ export function templateReservaAguardandoPagamento(servico: string, dataFormatad
     <p style="text-align:center;">Recebemos o seu pedido de agendamento e o horário abaixo está <span style="color:#e9c17a;">reservado para você</span>.</p>
     <p style="text-align:center;"><strong style="color:#fbe9ff;">Atenção:</strong> o agendamento só é confirmado depois que o pagamento for aprovado. Assim que isso acontecer, você recebe um novo e-mail de confirmação.</p>
     <div style="text-align:center; margin: 24px 0 8px;">${ctaButton('Ver minha reserva', `${SITE_URL}/minha-conta`)}</div>
+    <p style="text-align:center; color:#8a7a94; font-size:13px; margin-top:20px;">Dica: se o e-mail de confirmação não aparecer na sua caixa de entrada depois do pagamento, confira o spam. Se este e-mail estiver lá, marque como &ldquo;Não é spam&rdquo; para receber os próximos normalmente.</p>
   `;
   const detalhes = detailCard([
     { label: 'Serviço', valor: servico },

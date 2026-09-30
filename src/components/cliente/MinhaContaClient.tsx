@@ -198,7 +198,7 @@ export default function MinhaContaClient({
 
         {statusPagamento === "sucesso" && (
           <p className="mb-6 rounded-xl bg-green-500/10 p-4 text-sm text-green-400">
-            Pagamento aprovado! Sua reserva já está confirmada como paga.
+            Pagamento aprovado! Sua reserva já está confirmada como paga. Enviamos um e-mail de confirmação para você — se ele não aparecer na caixa de entrada, confira também a caixa de spam.
           </p>
         )}
         {statusPagamento === "pendente" && (
