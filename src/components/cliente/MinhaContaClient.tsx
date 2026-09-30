@@ -418,6 +418,9 @@ export default function MinhaContaClient({
             <p className="mb-4 text-sm text-zinc-400">
               Avalie sua experiência com o site e com o atendimento da Stella Celeste.
             </p>
+            <p className="mb-4 text-xs text-zinc-500">
+              Quando sua avaliação for aprovada, seu nome, sua foto e o campo &ldquo;Sobre você&rdquo; ficarão visíveis em uma página pública ligada ao seu depoimento, para mostrar que a avaliação é de uma pessoa real. Seu e-mail e telefone nunca aparecem.
+            </p>
 
             {avaliacaoState && (
               <p

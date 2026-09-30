@@ -1,6 +1,7 @@
 import Container from "../layout/Container";
 import AnimatedSection from "../layout/AnimatedSection";
 import { getAvaliacoesAprovadas } from "@/lib/actions/avaliacoes";
+import Link from "next/link";
 import { Star } from "lucide-react";
 
 export default async function Testimonials() {
@@ -48,7 +49,11 @@ export default async function Testimonials() {
                   &ldquo;{item.comentario}&rdquo;
                 </p>
 
-                <div className="mt-8 flex items-center gap-3">
+                <Link
+                  href={`/perfil/${item.id}`}
+                  aria-label={`Ver perfil de ${item.cliente.name}`}
+                  className="group mt-8 flex items-center gap-3"
+                >
                   {item.cliente.avatarUrl ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
@@ -61,8 +66,15 @@ export default async function Testimonials() {
                       {item.cliente.name.charAt(0).toUpperCase()}
                     </span>
                   )}
-                  <h4 className="font-semibold text-white">{item.cliente.name}</h4>
-                </div>
+                  <div>
+                    <h4 className="font-semibold text-white transition-colors group-hover:text-pink-200">
+                      {item.cliente.name}
+                    </h4>
+                    <span className="text-xs text-zinc-500 transition-colors group-hover:text-pink-300">
+                      Ver perfil
+                    </span>
+                  </div>
+                </Link>
               </AnimatedSection>
             ))}
           </div>
